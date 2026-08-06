@@ -2,18 +2,44 @@
   <header class="ari-topbar">
     <div class="ari-brand">
       <span class="ari-mark">ARI</span>
-      <span class="ari-sub">/ Flux Toast Stack</span>
+      <span class="ari-sub">/ Flux UI Library</span>
     </div>
     <div class="ari-actions">
-      <button class="ari-btn" (click)="reset()">Reset stack</button>
+      <button class="ari-btn" (click)="reset()">Reset demos</button>
       <a class="ari-btn" routerLink="/">Back to HoloMedia</a>
     </div>
   </header>
 
-  <div class="ari-stage">
-    <div class="ari-hint">
-      Move your pointer across the stage to tilt and parallax the stack. Hover the stack to expand it.
+  <section class="ari-section">
+    <div class="ari-section-head">
+      <h2>01 &middot; FluxToastStack</h2>
+      <p>3D tilt + parallax stacked toasts. Move your pointer across the stage; hover the stack to expand it.</p>
     </div>
-    <div #host class="ari-host"></div>
-  </div>
+    <div class="ari-host ari-toast">
+      <div #toastHost class="ari-fill"></div>
+    </div>
+  </section>
+
+  <section class="ari-section">
+    <div class="ari-section-head">
+      <h2>02 &middot; ScrollExpand</h2>
+      <p>Scroll-driven media frame that opens up as you scroll. First: window scroll. Second: frame scrolls inside its own box.</p>
+    </div>
+    <div class="ari-host ari-scrollwin">
+      <div #scrollWinHost class="ari-fill"></div>
+    </div>
+    <div class="ari-host ari-scrollbox">
+      <div #scrollBoxHost class="ari-fill"></div>
+    </div>
+  </section>
+
+  <section class="ari-section">
+    <div class="ari-section-head">
+      <h2>03 &middot; LineSidebar</h2>
+      <p>Pointer-tracking sidebar with a single rAF loop easing color, shift, and scale. Click an item to set it active.</p>
+    </div>
+    <div class="ari-host ari-sidebar">
+      <div #sidebarHost class="ari-fill"></div>
+    </div>
+  </section>
 </div>

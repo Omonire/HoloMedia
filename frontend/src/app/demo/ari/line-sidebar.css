@@ -1,0 +1,89 @@
+.ls-nav {
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.ls-nav-marker {
+  padding-left: calc(var(--marker-length) + var(--marker-gap));
+}
+
+.ls-list {
+  margin: 0;
+  display: flex;
+  list-style: none;
+  flex-direction: column;
+  padding: 1rem 0;
+  gap: var(--item-gap);
+}
+
+.ls-item {
+  position: relative;
+  cursor: pointer;
+}
+
+.ls-item::before {
+  content: '';
+  position: absolute;
+  left: -3rem;
+  right: -3rem;
+  top: -6px;
+  bottom: -6px;
+}
+
+.ls-item-marker::after {
+  content: '';
+  position: absolute;
+  left: calc(-1 * var(--marker-length) - var(--marker-gap));
+  top: calc(100% + var(--item-gap) / 2);
+  height: 1px;
+  opacity: 0.5;
+  background-color: var(--marker-color);
+  width: calc(var(--marker-length) * var(--tick-scale));
+  transform: translateY(-50%);
+}
+
+.ls-item-marker.ls-item-scaled::after {
+  transform: translateY(-50%) scaleX(calc(0.7 + var(--effect, 0) * 0.6));
+  transform-origin: left;
+}
+
+.ls-item-marker:last-child::after {
+  content: none;
+}
+
+.ls-marker {
+  position: absolute;
+  left: calc(-1 * var(--marker-length) - var(--marker-gap));
+  top: 50%;
+  height: 1px;
+  width: var(--marker-length);
+  transform-origin: left;
+  transform: translateY(-50%) scaleX(calc(0.7 + var(--effect, 0) * 0.5));
+  background-color: color-mix(
+    in srgb,
+    var(--accent-color) calc(var(--effect, 0) * 100%),
+    var(--marker-color)
+  );
+}
+
+.ls-text {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  line-height: 1.2;
+  color: color-mix(
+    in srgb,
+    var(--accent-color) calc(var(--effect, 0) * 100%),
+    var(--text-color)
+  );
+  font-size: var(--font-size);
+  transform: translateX(calc(var(--effect, 0) * var(--max-shift)));
+}
+
+.ls-index {
+  margin-right: 0.6rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  opacity: calc(0.55 + var(--effect, 0) * 0.45);
+}

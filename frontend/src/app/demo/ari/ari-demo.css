@@ -6,6 +6,7 @@
     #0a0a10;
   display: flex;
   flex-direction: column;
+  padding-bottom: 60px;
 }
 
 .ari-topbar {
@@ -15,6 +16,11 @@
   gap: 12px;
   padding: 18px 24px;
   border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(10, 10, 16, 0.8);
+  backdrop-filter: blur(8px);
 }
 
 .ari-brand {
@@ -62,31 +68,70 @@
   transform: translateY(-1px);
 }
 
-.ari-stage {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 28px 20px 48px;
+.ari-section {
+  width: min(760px, calc(100% - 32px));
+  margin: 0 auto;
 }
 
-.ari-hint {
+.ari-section + .ari-section {
+  margin-top: 56px;
+}
+
+.ari-section-head {
+  margin: 28px 0 16px;
+}
+
+.ari-section-head h2 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--text);
+}
+
+.ari-section-head p {
+  margin: 0;
+  font-size: 13.5px;
   color: var(--text-dim);
-  font-size: 13px;
-  margin-bottom: 22px;
-  text-align: center;
-  max-width: 560px;
+  line-height: 1.5;
 }
 
 .ari-host {
   width: 100%;
-  max-width: 720px;
-  flex: 1;
-  min-height: 480px;
   border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
+}
+
+.ari-fill {
+  width: 100%;
+  height: 100%;
+}
+
+.ari-toast .ari-fill {
+  min-height: 460px;
+}
+
+.ari-scrollwin .ari-fill {
+  min-height: 520px;
+}
+
+.ari-scrollbox {
+  margin-top: 22px;
+  height: 520px;
+}
+
+.ari-sidebar {
+  background: var(--surface);
+  padding: 18px 8px;
+}
+
+.ari-sidebar .ari-fill {
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @media (max-width: 640px) {
@@ -98,16 +143,19 @@
     display: none;
   }
 
-  .ari-stage {
-    padding: 16px 12px 32px;
+  .ari-section {
+    width: calc(100% - 24px);
   }
 
-  .ari-hint {
-    font-size: 12px;
-    margin-bottom: 14px;
-  }
-
-  .ari-host {
+  .ari-toast .ari-fill {
     min-height: 420px;
+  }
+
+  .ari-scrollwin .ari-fill {
+    min-height: 420px;
+  }
+
+  .ari-scrollbox {
+    height: 420px;
   }
 }
