@@ -1,0 +1,68 @@
+<div class="landing">
+  <header class="landing-nav">
+    <a routerLink="/" class="landing-logo" aria-label="HoloMedia home">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+        <path d="M12 6l2.2 3.8L18 11l-3.8 2.2L12 17l-2.2-3.8L6 11l3.8-1.2L12 6z" fill="url(#llg)"/>
+        <defs><linearGradient id="llg" x1="2" y1="2" x2="22" y2="22">
+          <stop stop-color="#7c3aed"/><stop offset="1" stop-color="#ec4899"/>
+        </linearGradient></defs>
+      </svg>
+      <span>HoloMedia</span>
+    </a>
+    <nav class="landing-navlinks">
+      <a routerLink="/login">Log in</a>
+      <a routerLink="/register" class="btn btn-primary btn-sm">Get started</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-badge">A fresh take on social</div>
+      <h1>
+        Where your moments<br>
+        <span class="gradient-text">go live</span>
+      </h1>
+      <p class="hero-sub">
+        Share posts, loop reels, drop sounds, and hang out in groups —
+        all in one place built for people who move fast.
+      </p>
+      <div class="hero-cta">
+        <a routerLink="/register" class="btn btn-primary btn-lg">Create your account</a>
+        <a routerLink="/login" class="btn btn-ghost btn-lg">Log in</a>
+      </div>
+      <p class="hero-note">Free forever. No email verification needed.</p>
+    </section>
+
+    <section class="features">
+      <h2>Everything you love, in one feed</h2>
+      <p class="features-sub">Six ways to connect — designed to feel effortless.</p>
+      <div class="features-grid">
+        @for (f of features; track f.title) {
+          <div class="feature-card card">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path [attr.d]="f.icon"/>
+              </svg>
+            </div>
+            <h3>{{ f.title }}</h3>
+            <p>{{ f.desc }}</p>
+          </div>
+        }
+      </div>
+    </section>
+  </main>
+
+  <footer class="landing-footer">
+    <div class="landing-logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M12 6l2.2 3.8L18 11l-3.8 2.2L12 17l-2.2-3.8L6 11l3.8-1.2L12 6z" fill="url(#llf)"/>
+        <defs><linearGradient id="llf" x1="2" y1="2" x2="22" y2="22">
+          <stop stop-color="#7c3aed"/><stop offset="1" stop-color="#ec4899"/>
+        </linearGradient></defs>
+      </svg>
+      <span>HoloMedia</span>
+    </div>
+    <p>© 2026 HoloMedia. Made with care.</p>
+  </footer>
+</div>

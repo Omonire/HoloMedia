@@ -9,8 +9,86 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    #hm-splash {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background-color: #0a0a10;
+      background-image: radial-gradient(700px 380px at 50% -10%, rgba(124, 58, 237, 0.22), transparent 60%),
+                        radial-gradient(560px 320px at 50% 115%, rgba(236, 72, 153, 0.14), transparent 60%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      transition: opacity .5s ease, visibility .5s ease;
+    }
+    #hm-splash.hide { opacity: 0; visibility: hidden; }
+    .splash-mark {
+      width: 86px;
+      height: 86px;
+      border-radius: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(124, 58, 237, .12);
+      border: 1px solid rgba(124, 58, 237, .35);
+      box-shadow: 0 0 60px rgba(124, 58, 237, .35);
+      animation: splash-pulse 2.2s ease-in-out infinite;
+    }
+    .splash-name {
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      font-size: 26px;
+      letter-spacing: -0.4px;
+      background: linear-gradient(120deg, #7c3aed, #ec4899);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .splash-bars {
+      display: flex;
+      gap: 5px;
+      height: 18px;
+      align-items: flex-end;
+    }
+    .splash-bars i {
+      width: 4px;
+      border-radius: 4px;
+      background: linear-gradient(180deg, #ec4899, #7c3aed);
+      animation: splash-bar 1s ease-in-out infinite;
+    }
+    .splash-bars i:nth-child(2) { animation-delay: .15s; }
+    .splash-bars i:nth-child(3) { animation-delay: .3s; }
+    .splash-bars i:nth-child(4) { animation-delay: .45s; }
+    .splash-bars i:nth-child(5) { animation-delay: .6s; }
+    @keyframes splash-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+    @keyframes splash-bar {
+      0%, 100% { height: 6px; }
+      50% { height: 18px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #hm-splash, .splash-mark, .splash-bars i { animation: none; }
+    }
+  </style>
 </head>
 <body>
+  <div id="hm-splash" aria-hidden="true">
+    <div class="splash-mark">
+      <svg width="46" height="46" viewBox="0 0 24 24" fill="none">
+        <path d="M12 6l2.2 3.8L18 11l-3.8 2.2L12 17l-2.2-3.8L6 11l3.8-1.2L12 6z" fill="url(#hmsp)"/>
+        <defs><linearGradient id="hmsp" x1="2" y1="2" x2="22" y2="22">
+          <stop stop-color="#7c3aed"/><stop offset="1" stop-color="#ec4899"/>
+        </linearGradient></defs>
+      </svg>
+    </div>
+    <div class="splash-name">HoloMedia</div>
+    <div class="splash-bars"><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
   <app-root></app-root>
 </body>
 </html>

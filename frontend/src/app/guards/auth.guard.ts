@@ -6,7 +6,7 @@ const hasToken = (): boolean => !!localStorage.getItem('hm_token');
 
 export const authGuard: CanActivateFn = () => {
   if (hasToken()) return true;
-  return inject(Router).parseUrl('/login');
+  return inject(Router).parseUrl('/welcome');
 };
 
 export const guestGuard: CanActivateFn = () => {
@@ -16,7 +16,7 @@ export const guestGuard: CanActivateFn = () => {
 
 export const adminGuard: CanActivateFn = async () => {
   const router = inject(Router);
-  if (!hasToken()) return router.parseUrl('/login');
+  if (!hasToken()) return router.parseUrl('/welcome');
   const user = await inject(AuthService).whenReady();
   return !!user?.is_admin ? true : router.parseUrl('/');
 };

@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard, guestGuard, adminGuard } from './guards/auth.guard';
 import { AppShellComponent } from './layout/app-shell.component';
+import { LandingComponent } from './pages/landing.component';
 import { LoginComponent } from './pages/login.component';
 import { RegisterComponent } from './pages/register.component';
 import { FeedComponent } from './pages/feed.component';
@@ -19,6 +20,7 @@ import { ProfileComponent } from './pages/profile.component';
 import { AdminComponent } from './pages/admin.component';
 
 export const routes: Routes = [
+  { path: 'welcome', component: LandingComponent, canActivate: [guestGuard] },
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },
   {
