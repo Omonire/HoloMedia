@@ -67,9 +67,24 @@
 }
 
 @media (max-width: 640px) {
-  .sidebar { flex-direction: row; align-items: center; padding: 8px 12px; gap: 4px; }
-  .logo { margin: 0; padding: 0 12px 0 0; }
+  .sidebar {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 12px;
+    gap: 8px;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    justify-content: space-between;
+  }
+  .sidebar::-webkit-scrollbar {
+    display: none;
+  }
+  .logo { display: none; }
   .sidebar-footer { margin: 0; padding: 0; background: none; border: none; display: none; }
-  .nav-item { flex: 1; }
+  .nav-item { flex: 1 0 auto; min-width: 44px; display: inline-flex; justify-content: center; padding: 8px 0; }
   .nav-item svg { width: 24px; height: 24px; }
 }

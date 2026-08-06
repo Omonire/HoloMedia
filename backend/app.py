@@ -40,8 +40,11 @@ def create_app():
 
     @app.get("/api/suggestions")
     def suggestions():
-        users = User.query.order_by(User.followers.count().desc()).limit(5).all()
-        return jsonify(users=[u.to_dict() for u in users])
+        # Retrieve all users, compute count of followers, and sort them descending
+        users = User.query.all()
+        # Sort users by follower count descending
+        sorted_users = sorted(users, key=lambda u: u.followers.count(), reverse=True)[:5]
+        return jsonify(users=[u.to_dict() for u in sorted_users])
 
     @app.get("/")
     def frontend_index():
@@ -77,4 +80,4 @@ app = create_app()
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    socketio.run(app, debug=True, port=5000)
+    socketio.run(app, debug=True, port=5000, allow_unsafe_werkzeug=True)
