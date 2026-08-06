@@ -1,0 +1,54 @@
+<aside class="right">
+  <div class="search-box">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input #search class="search-input" placeholder="Search HoloMedia" (input)="searchOpen = search.value.length > 0"
+           (keydown.enter)="query = search.value; searchOpen = true" />
+  </div>
+
+  @if (searchOpen && query.trim()) {
+    <app-user-search [q]="query" (close)="searchOpen = false" />
+  }
+
+  <div class="card panel">
+    <h2 class="panel-title">Who to follow</h2>
+    @if (suggestions.length === 0) {
+      <p class="empty" style="padding:16px">No suggestions yet.</p>
+    }
+    @for (u of suggestions; track u.id) {
+      <div class="suggestion">
+        <button class="suggestion-user" (click)="openUser(u)">
+          <app-avatar [name]="u.full_name" [color]="u.avatar_color" [size]="40"/>
+          <div class="sug-info">
+            <strong>{{ u.full_name }}</strong>
+            <span>@{{ u.username }}</span>
+          </div>
+        </button>
+        <button class="btn btn-sm" [class.btn-primary]="!u.is_following" [class.btn-ghost]="u.is_following"
+                (click)="follow(u)">
+          {{ u.is_following ? 'Following' : 'Follow' }}
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="card panel">
+    <h2 class="panel-title">Trending now</h2>
+    @if (trending.length === 0) {
+      <p class="empty" style="padding:16px">Nothing trending yet.</p>
+    }
+    @for (t of trending.slice(0, 5); track t.tag) {
+      <a routerLink="/hashtag/{{ t.tag }}" class="trend">
+        <span class="trend-tag">#{{ t.tag }}</span>
+        <span class="trend-count">{{ t.count }} {{ t.count === 1 ? 'post' : 'posts' }}</span>
+      </a>
+    }
+  </div>
+
+  <div class="foot-note">
+    <p>HoloMedia &copy; 2026</p>
+    <p>Built with Angular + Flask</p>
+  </div>
+</aside>

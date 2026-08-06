@@ -1,0 +1,55 @@
+<div class="page">
+  <div class="page-title">
+    <a routerLink="/messages" class="icon-btn" title="Back">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/>
+           <polyline points="12 19 5 12 12 5"/></svg>
+    </a>
+    @if (other(); as u) {
+      <a [routerLink]="['/', u.username]" style="display:flex;align-items:center;gap:12px">
+        <app-avatar [name]="u.full_name" [color]="u.avatar_color" [size]="40"/>
+        <div>
+          <h1 style="margin:0;font-size:16px">{{ u.full_name }}
+            @if (online()) { <span class="online-dot" title="Online"></span> }
+          </h1>
+          <span style="font-size:12.5px;color:var(--text-dim)">@{{ u.username }}</span>
+        </div>
+      </a>
+    } @else {
+      <h1>Conversation</h1>
+    }
+  </div>
+
+  @if (error()) {
+    <div class="card empty"><h3>User not found</h3></div>
+  } @else {
+    <div class="card thread-card">
+      <div class="thread" #thread>
+        @if (loading) {
+          <div class="empty">Loading messages...</div>
+        } @else if (messages.length === 0) {
+          <div class="empty">Say hi to @{{ username }}!</div>
+        } @else {
+          @for (m of messages; track m.id) {
+            <div class="bubble-wrap" [class.mine]="m.mine">
+              <div class="bubble" [class.mine-b]="m.mine">
+                <p>{{ m.content }}</p>
+                <span class="b-time">{{ m.created_at | timeAgo }}</span>
+              </div>
+            </div>
+          }
+        }
+      </div>
+
+      <div class="compose">
+        <textarea class="textarea" rows="1" placeholder="Type a message..."
+                  [(ngModel)]="text" (keydown.enter)="$event.preventDefault(); send()"></textarea>
+        <button class="btn btn-primary" [disabled]="!text.trim()" (click)="send()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  }
+</div>

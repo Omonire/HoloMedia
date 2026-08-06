@@ -1,0 +1,140 @@
+<article class="card post">
+  @if (post().is_repost) {
+    <div class="repost-banner">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/>
+        <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+      </svg>
+      <a [routerLink]="['/', post().author.username]">@{{ post().author.username }}</a> reposted
+    </div>
+  }
+
+  @if (post().repost_of; as original) {
+    <header class="post-head">
+      <a [routerLink]="['/', original.author.username]">
+        <app-avatar [name]="original.author.full_name" [color]="original.author.avatar_color" [size]="44"/>
+      </a>
+      <div class="post-meta">
+        <a [routerLink]="['/', original.author.username]" class="name">{{ original.author.full_name }}</a>
+        <span class="username">@{{ original.author.username }} &middot; {{ original.created_at | timeAgo }}</span>
+      </div>
+      @if (canEdit()) {
+        <span class="you-tag">you</span>
+      }
+    </header>
+
+    <p class="content">
+      @for (part of split(original.content); track $index) {
+        @if (part.isTag) {
+          <a [routerLink]="['/hashtag', part.text.slice(1)]" class="tag-link">{{ part.text }}</a>
+        } @else {
+          {{ part.text }}
+        }
+      }
+    </p>
+
+    @if (original.image_url) {
+      <img [src]="original.image_url" alt="Post image" class="post-img" loading="lazy" />
+    }
+    @if (original.video_url) {
+      <video [src]="original.video_url" class="post-video" controls preload="metadata" playsinline></video>
+    }
+    @if (original.sound) {
+      <a [routerLink]="['/sounds']" class="sound-chip">
+        ♪ {{ original.sound }}@if (original.sound_artist) { <span class="sc-artist">— {{ original.sound_artist }}</span> }
+      </a>
+    }
+
+    <footer class="post-actions">
+      <app-reaction-btn [post]="original" (updated)="updated.emit($event)" />
+      <button class="action" (click)="commentClick()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span>{{ original.comments_count }}</span>
+      </button>
+      <a [routerLink]="['/p', original.id]" class="action link">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        </svg>
+        <span>View</span>
+      </a>
+    </footer>
+  } @else {
+    <header class="post-head">
+      <a [routerLink]="['/', post().author.username]">
+        <app-avatar [name]="post().author.full_name" [color]="post().author.avatar_color" [size]="44"/>
+      </a>
+      <div class="post-meta">
+        <a [routerLink]="['/', post().author.username]" class="name">{{ post().author.full_name }}</a>
+        <span class="username">@{{ post().author.username }} &middot; {{ post().created_at | timeAgo }}</span>
+      </div>
+      @if (canEdit()) {
+        <span class="you-tag">you</span>
+      }
+    </header>
+
+    <p class="content">
+      @for (part of split(post().content); track $index) {
+        @if (part.isTag) {
+          <a [routerLink]="['/hashtag', part.text.slice(1)]" class="tag-link">{{ part.text }}</a>
+        } @else {
+          {{ part.text }}
+        }
+      }
+    </p>
+
+    @if (post().image_url) {
+      <img [src]="post().image_url" alt="Post image" class="post-img" loading="lazy" />
+    }
+    @if (post().video_url) {
+      <video [src]="post().video_url" class="post-video" controls preload="metadata" playsinline></video>
+    }
+    @if (post().sound) {
+      <a [routerLink]="['/sounds']" class="sound-chip">
+        ♪ {{ post().sound }}@if (post().sound_artist) { <span class="sc-artist">— {{ post().sound_artist }}</span> }
+      </a>
+    }
+
+    <footer class="post-actions">
+      <app-reaction-btn [post]="post()" (updated)="updated.emit($event)" />
+      <button class="action" (click)="commentClick()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span>{{ post().comments_count }}</span>
+      </button>
+
+      <div class="action-wrap">
+        <button class="action" [class.active]="post().reposted" (click)="toggleRepost()" title="Repost">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+          </svg>
+          <span>{{ post().reposts_count }}</span>
+        </button>
+      </div>
+
+      <button class="action" [class.active]="post().bookmarked" (click)="toggleBookmark()" title="Save">
+        <svg width="20" height="20" viewBox="0 0 24 24" [attr.fill]="post().bookmarked ? 'currentColor' : 'none'"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span>{{ post().bookmarks_count }}</span>
+      </button>
+
+      <a [routerLink]="['/p', post().id]" class="action link">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        </svg>
+        <span>View</span>
+      </a>
+    </footer>
+  }
+</article>

@@ -1,0 +1,77 @@
+<div class="reels-scroll">
+  @if (loading) {
+    <div class="reel empty"><h3>Loading reels...</h3></div>
+  } @else if (videos().length === 0) {
+    <div class="reel empty">
+      <h3>No reels yet</h3>
+      Post a video from the composer to add one!
+    </div>
+  } @else {
+    @for (v of videos(); track v.id) {
+      <div class="reel">
+        <video #video [attr.data-id]="v.id" [src]="v.video_url" loop muted playsinline
+               class="reel-video" (click)="togglePlay()"></video>
+
+        <div class="reel-shade"></div>
+
+        <div class="reel-info">
+          <div class="reel-user">
+            <a [routerLink]="['/', v.author.username]" class="reel-avatar">
+              <app-avatar [name]="v.author.full_name" [color]="v.author.avatar_color" [size]="42"/>
+            </a>
+            <a [routerLink]="['/', v.author.username]" class="reel-name">@{{ v.author.username }}</a>
+            <a [routerLink]="['/', v.author.username]" class="btn btn-sm btn-ghost" style="padding:4px 12px">Follow</a>
+          </div>
+          <p class="reel-caption">
+            @for (part of split(v.content); track $index) {
+              @if (part.isTag) {
+                <a [routerLink]="['/hashtag', part.text.slice(1)]" class="tag-link">{{ part.text }}</a>
+              } @else {
+                {{ part.text }}
+              }
+            }
+          </p>
+          <a [routerLink]="['/sounds']" class="reel-song">
+            @if (v.sound) {
+              ♪ {{ v.sound }}@if (v.sound_artist) { <span class="rs-artist">— {{ v.sound_artist }}</span> }
+            } @else {
+              ♪ {{ v.author.full_name }} &middot; original audio
+            }
+          </a>
+        </div>
+
+        <div class="reel-actions">
+          <div class="ra">
+            <button class="ra-btn" (click)="react(v, v.my_reaction ? 'like' : 'love')">
+              <span class="ra-emoji">{{ emoji(v.my_reaction) || '♥' }}</span>
+            </button>
+            <span class="ra-count">{{ v.likes_count }}</span>
+          </div>
+          <div class="ra">
+            <button class="ra-btn" (click)="openComments(v)">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </button>
+            <span class="ra-count">{{ v.comments_count }}</span>
+          </div>
+          <div class="ra">
+            <button class="ra-btn" [class.on]="v.bookmarked" (click)="bookmark(v)">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+              </svg>
+            </button>
+            <span class="ra-count">{{ v.bookmarks_count }}</span>
+          </div>
+          <a [routerLink]="['/p', v.id]" class="ra">
+            <button class="ra-btn">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              </svg>
+            </button>
+          </a>
+        </div>
+      </div>
+    }
+  }
+</div>

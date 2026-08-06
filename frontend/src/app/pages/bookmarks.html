@@ -1,0 +1,23 @@
+<div class="page">
+  <div class="page-title">
+    <a routerLink="/" class="icon-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/>
+           <polyline points="12 19 5 12 12 5"/></svg>
+    </a>
+    <h1>Saved posts</h1>
+  </div>
+
+  @if (loading) {
+    <div class="empty">Loading...</div>
+  } @else if (posts.length === 0) {
+    <div class="card empty">
+      <h3>Nothing saved yet</h3>
+      Tap the bookmark icon on any post to save it here.
+    </div>
+  } @else {
+    @for (p of posts; track p.id) {
+      <app-post-card [post]="p" (updated)="onUpdated($event)" (openComments)="openPost($event)" />
+    }
+  }
+</div>

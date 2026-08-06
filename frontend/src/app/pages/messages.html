@@ -1,0 +1,46 @@
+<div class="page">
+  <div class="page-title"><h1>Messages</h1></div>
+
+  <div class="card new-chat">
+    <div class="new-chat-row">
+      <input class="input" type="text" placeholder="Find someone to message..."
+             [(ngModel)]="search" (ngModelChange)="searchUsers()" />
+    </div>
+    @if (searchResults.length > 0) {
+      <div class="new-results">
+        @for (u of searchResults; track u.id) {
+          <button class="result" (click)="openUser(u)">
+            <app-avatar [name]="u.full_name" [color]="u.avatar_color" [size]="34"/>
+            <span class="r-name">{{ u.full_name }}</span>
+            <span class="r-user">@{{ u.username }}</span>
+          </button>
+        }
+      </div>
+    }
+  </div>
+
+  @if (loading) {
+    <div class="empty">Loading conversations...</div>
+  } @else if (conversations.length === 0) {
+    <div class="card empty">
+      <h3>No conversations yet</h3>
+      Search for someone above to start chatting.
+    </div>
+  } @else {
+    <div class="card convo-list">
+      @for (c of conversations; track c.user.id) {
+        <button class="convo" (click)="openConvo(c)">
+          <app-avatar [name]="c.user.full_name" [color]="c.user.avatar_color" [size]="46"/>
+          <div class="convo-body">
+            <div class="convo-top">
+              <strong>{{ c.user.full_name }}</strong>
+              <span class="c-time">{{ c.last_message.created_at | timeAgo }}</span>
+            </div>
+            <span class="preview">{{ c.last_message.mine ? 'You: ' : '' }}{{ c.last_message.content }}</span>
+          </div>
+          @if (c.unread > 0) { <span class="badge unread-badge">{{ c.unread }}</span> }
+        </button>
+      }
+    </div>
+  }
+</div>

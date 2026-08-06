@@ -1,0 +1,52 @@
+.page-sub { margin: -6px 0 16px; color: var(--text-dim); font-size: 13.5px; }
+
+.spotify-search { padding: 18px 20px; margin-bottom: 8px; }
+.sp-label { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+.sp-hint { margin-top: 8px; color: var(--text-dim); font-size: 13px; }
+.sp-results { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; max-height: 340px; overflow-y: auto; }
+
+.track-card { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 10px; }
+.track-card:hover { background: var(--surface-2); }
+.tc-art { width: 46px; height: 46px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+.tc-info { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.3; }
+.tc-info strong { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tc-info span { font-size: 12.5px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tc-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.tc-play.on { background: var(--gradient); color: #fff; border-color: transparent; }
+.tc-audio { position: absolute; bottom: 10px; left: 12px; right: 12px; height: 32px; }
+.track-card { position: relative; }
+
+.ex-badge { font-size: 10px; font-weight: 700; color: #fff; background: var(--danger); border-radius: 4px; padding: 1px 5px; }
+
+.sounds-layout { display: grid; grid-template-columns: 340px 1fr; gap: 14px; align-items: start; }
+
+.sound-list { display: flex; flex-direction: column; gap: 6px; }
+.sound-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px;
+             cursor: pointer; border: 1px solid transparent; background: var(--surface); }
+.sound-row:hover { background: var(--surface-2); }
+.sound-row.on { border-color: rgba(124,58,237,.6); background: linear-gradient(120deg, rgba(124,58,237,.12), var(--surface)); }
+.s-play { width: 42px; height: 42px; border-radius: 50%; border: none; color: #fff; cursor: pointer;
+          display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.s-art { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+.s-info { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.35; }
+.s-info strong { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.s-info span { font-size: 12px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.s-info a { color: var(--accent); }
+.s-count { font-size: 12px; color: var(--text-dim); flex-shrink: 0; }
+
+.eq { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+.eq i { width: 3px; border-radius: 2px; background: #fff; animation: eq-bounce 1s infinite ease-in-out; }
+.eq i:nth-child(2) { animation-delay: .15s; }
+.eq i:nth-child(3) { animation-delay: .3s; }
+@keyframes eq-bounce { 0%, 100% { height: 5px; } 50% { height: 14px; } }
+
+.s-reels { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+.s-reel { position: relative; aspect-ratio: 9 / 16; border-radius: 14px; overflow: hidden; display: block; }
+.s-reel video { width: 100%; height: 100%; object-fit: cover; }
+.sr-user { position: absolute; left: 8px; bottom: 26px; font-size: 12px; font-weight: 600; color: #fff;
+           text-shadow: 0 1px 4px #000a; }
+.sr-plays { position: absolute; left: 8px; bottom: 8px; font-size: 11px; color: #fffc; text-shadow: 0 1px 4px #000a; }
+
+@media (max-width: 900px) {
+  .sounds-layout { grid-template-columns: 1fr; }
+}

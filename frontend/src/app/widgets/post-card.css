@@ -1,0 +1,97 @@
+.post { padding: 18px 20px; margin-bottom: 16px; }
+
+.repost-banner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-dim);
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.repost-banner a { font-weight: 700; color: var(--text-dim); }
+.repost-banner a:hover { color: var(--accent); }
+
+.post-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.post-meta { flex: 1; min-width: 0; }
+.post-meta .name { display: block; font-weight: 600; font-size: 15px; }
+.post-meta .name:hover { color: var(--accent); }
+.post-meta .username { font-size: 13px; color: var(--text-dim); }
+
+.you-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, .15);
+  color: var(--accent);
+  border: 1px solid rgba(124, 58, 237, .3);
+}
+
+.content { margin: 0 0 14px; font-size: 15.5px; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
+
+.post-img {
+  width: 100%;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+  display: block;
+  max-height: 480px;
+  object-fit: cover;
+}
+
+.post-video {
+  width: 100%;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+  display: block;
+  background: #000;
+  max-height: 520px;
+}
+
+.tag-link { color: var(--accent); font-weight: 600; }
+.tag-link:hover { text-decoration: underline; }
+
+.sound-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: -4px 0 12px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent);
+  background: rgba(124, 58, 237, .1);
+  border: 1px solid rgba(124, 58, 237, .25);
+  text-decoration: none;
+}
+.sound-chip:hover { background: rgba(124, 58, 237, .18); }
+.sc-artist { font-weight: 500; opacity: .8; }
+
+.post-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 4px;
+}
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: background .15s, color .15s;
+}
+.action:hover { background: var(--surface-2); color: var(--text); }
+.action.liked { color: var(--danger); }
+.action.active { color: var(--ok); }
+.action.link { margin-left: auto; text-decoration: none; }
+.action-wrap { position: relative; }

@@ -1,0 +1,118 @@
+<div class="page">
+  @if (error()) {
+    <div class="card empty">
+      <h3>User not found</h3>
+      This profile doesn't exist. <a routerLink="/" style="color:var(--accent)">Back to home</a>
+    </div>
+  } @else if (user(); as u) {
+    <div class="card profile">
+      <div class="cover" [style.background]="'linear-gradient(120deg, ' + u.avatar_color + ', rgba(236,72,153,.85))'"></div>
+      <div class="profile-body">
+        <div class="avatar-row">
+          <app-avatar [name]="u.full_name" [color]="u.avatar_color" [size]="84"/>
+          <div class="profile-actions">
+            @if (isSelf()) {
+              <button class="btn btn-ghost btn-sm" (click)="openEdit()">Edit profile</button>
+            } @else {
+              @if (u.is_following) {
+                <button class="btn btn-ghost btn-sm" (click)="toggleFollow()">Following</button>
+              } @else {
+                <button class="btn btn-primary btn-sm" (click)="toggleFollow()">Follow</button>
+              }
+              <button class="btn btn-ghost btn-sm" (click)="message()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                Message
+              </button>
+            }
+          </div>
+        </div>
+
+        <h1 class="name">{{ u.full_name }}</h1>
+        <span class="username">@{{ u.username }}</span>
+
+        @if (u.bio) { <p class="bio">{{ u.bio }}</p> }
+
+        <span class="joined">Joined {{ u.created_at | timeAgo }}</span>
+
+        <div class="stats">
+          <button class="stat" (click)="switchTab('posts')"><strong>{{ u.post_count }}</strong> posts</button>
+          <button class="stat" (click)="switchTab('followers')"><strong>{{ u.followers_count }}</strong> followers</button>
+          <button class="stat" (click)="switchTab('following')"><strong>{{ u.following_count }}</strong> following</button>
+        </div>
+
+        <div class="tabs">
+          <button class="tab" [class.active]="tab === 'posts'" (click)="switchTab('posts')">Posts</button>
+          <button class="tab" [class.active]="tab === 'followers'" (click)="switchTab('followers')">Followers</button>
+          <button class="tab" [class.active]="tab === 'following'" (click)="switchTab('following')">Following</button>
+        </div>
+
+        @if (tab === 'posts') {
+          @if (posts.length === 0) {
+            <div class="empty">
+              <h3>No posts yet</h3>
+              @if (isSelf()) { Write your first post from the home feed! }
+            </div>
+          } @else {
+            @for (p of posts; track p.id) {
+              <app-post-card [post]="p" (updated)="onUpdated($event)" (openComments)="openPost($event)" />
+            }
+          }
+        } @else {
+          @if (followingLoading) {
+            <div class="empty">Loading...</div>
+          } @else {
+            @for (f of (tab === 'followers' ? followers : following); track f.id) {
+              <div class="card person">
+                <a [routerLink]="['/', f.username]" class="person-main">
+                  <app-avatar [name]="f.full_name" [color]="f.avatar_color" [size]="40"/>
+                  <div>
+                    <strong>{{ f.full_name }}</strong>
+                    <span>@{{ f.username }}</span>
+                  </div>
+                </a>
+              </div>
+            } @empty {
+              <div class="empty">
+                @if (tab === 'followers') { No followers yet. }
+                @else { Not following anyone yet. }
+              </div>
+            }
+          }
+        }
+      </div>
+    </div>
+
+    @if (editOpen()) {
+      <div class="modal-backdrop" (click)="editOpen.set(false)">
+        <div class="modal card" (click)="$event.stopPropagation()">
+          <h2>Edit profile</h2>
+          @if (saveError) { <div class="error-msg">{{ saveError }}</div> }
+
+          <label>Full name</label>
+          <input class="input" [(ngModel)]="editName" name="name" />
+
+          <label>Bio</label>
+          <textarea class="textarea" rows="3" [(ngModel)]="editBio" name="bio" maxlength="240"></textarea>
+
+          <label>Avatar color</label>
+          <div class="color-row">
+            @for (c of colors; track c) {
+              <button class="color-dot" [style.background]="c"
+                      [class.selected]="editColor === c" (click)="pickColor(c)"></button>
+            }
+          </div>
+
+          <div class="modal-actions">
+            <button class="btn btn-ghost" (click)="editOpen.set(false)">Cancel</button>
+            <button class="btn btn-primary" [disabled]="saving" (click)="saveEdit()">
+              {{ saving ? 'Saving...' : 'Save' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>

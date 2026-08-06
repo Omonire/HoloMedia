@@ -1,0 +1,28 @@
+<section class="comments" id="comments">
+  <div class="comment-input">
+    <textarea class="textarea" rows="2" [placeholder]="'Write a comment...'" [(ngModel)]="text"
+              (keydown.enter)="$event.preventDefault(); send()"></textarea>
+    <button class="btn btn-primary btn-sm" [disabled]="!text.trim() || loading" (click)="send()">
+      {{ loading ? 'Sending...' : 'Comment' }}
+    </button>
+  </div>
+
+  @if (comments.length === 0) {
+    <p class="empty">No comments yet. Be the first to say something.</p>
+  } @else {
+    @for (c of comments; track c.id) {
+      <div class="comment">
+        <a [routerLink]="['/', c.author.username]">
+          <app-avatar [name]="c.author.full_name" [color]="c.author.avatar_color" [size]="34"/>
+        </a>
+        <div class="comment-body">
+          <div class="comment-head">
+            <a [routerLink]="['/', c.author.username]" class="c-name">{{ c.author.full_name }}</a>
+            <span class="c-time">{{ c.created_at | timeAgo }}</span>
+          </div>
+          <p>{{ c.content }}</p>
+        </div>
+      </div>
+    }
+  }
+</section>

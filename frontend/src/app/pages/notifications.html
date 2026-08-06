@@ -1,0 +1,32 @@
+<div class="page">
+  <div class="page-title"><h1>Notifications</h1></div>
+
+  @if (loading) {
+    <div class="empty">Loading notifications...</div>
+  } @else if (items.length === 0) {
+    <div class="card empty">
+      <h3>Nothing yet</h3>
+      When people follow, like, comment, or message you, it'll show up here.
+    </div>
+  } @else {
+    @for (n of items; track n.id) {
+      <div class="card note" [class.unread]="!n.read">
+        <a [routerLink]="['/', n.actor.username]">
+          <app-avatar [name]="n.actor.full_name" [color]="n.actor.avatar_color" [size]="42"/>
+        </a>
+        <div class="note-body">
+          <a [routerLink]="['/', n.actor.username]" class="who">{{ n.actor.full_name }}</a>
+          <span class="what">
+            @if (n.kind === 'follow') { started following you }
+            @else if (n.kind === 'like') { liked your <a [routerLink]="['/p', n.post_id]">post</a> }
+            @else if (n.kind === 'comment') { commented on your <a [routerLink]="['/p', n.post_id]">post</a> }
+            @else if (n.kind === 'repost') { reposted your <a [routerLink]="['/p', n.post_id]">post</a> }
+            @else if (n.kind === 'group') { joined your <a routerLink="/groups">group</a> }
+            @else { sent you a <a routerLink="/messages">message</a> }
+          </span>
+          <span class="time">{{ n.created_at | timeAgo }}</span>
+        </div>
+      </div>
+    }
+  }
+</div>

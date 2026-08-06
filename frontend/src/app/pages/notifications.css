@@ -1,0 +1,9 @@
+.note { display: flex; gap: 12px; align-items: center; padding: 14px 18px; margin-bottom: 10px; }
+.note.unread { border-color: rgba(124,58,237,.6); background: linear-gradient(120deg, rgba(124,58,237,.08), var(--surface)); }
+.note-body { flex: 1; min-width: 0; }
+.who { font-weight: 600; margin-right: 4px; }
+.who:hover { color: var(--accent); }
+.what { font-size: 14px; color: var(--text); }
+.what a { color: var(--accent); font-weight: 600; }
+.what a:hover { text-decoration: underline; }
+.time { display: block; color: var(--text-dim); font-size: 12px; margin-top: 2px; }

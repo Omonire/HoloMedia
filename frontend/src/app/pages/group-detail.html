@@ -1,0 +1,94 @@
+<div class="page">
+  @if (error()) {
+    <div class="card empty">
+      <h3>Group not found</h3>
+      <a routerLink="/groups" style="color:var(--accent)">Back to groups</a>
+    </div>
+  } @else if (group(); as g) {
+    <div class="card group-head">
+      <div class="gh-cover" [style.background]="'linear-gradient(120deg, ' + g.icon_color + ', rgba(236,72,153,.85))'"></div>
+      <div class="gh-body">
+        <div class="gh-row">
+          <span class="group-icon" [style.background]="g.icon_color">{{ g.name[0] }}</span>
+          <div class="gh-main">
+            <h1>{{ g.name }}</h1>
+            <span class="gh-meta">
+              {{ g.members_count }} members &middot; {{ g.posts_count }} posts
+              @if (g.is_member) { &middot; <span class="member-badge">✓ Member</span> }
+            </span>
+            @if (g.description) { <p class="gh-desc">{{ g.description }}</p> }
+            <span class="gh-created">
+              Created by <a [routerLink]="['/', g.created_by.username]">@{{ g.created_by.username }}</a>
+              &middot; {{ g.created_at | timeAgo }}
+            </span>
+          </div>
+          <button class="btn btn-sm" [class.btn-ghost]="g.is_member" [class.btn-primary]="!g.is_member"
+                  (click)="toggleJoin()">
+            {{ g.is_member ? 'Leave group' : 'Join group' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    @if (g.is_member) {
+      <div class="composer card">
+        <div class="composer-main">
+          <textarea class="textarea" rows="2" placeholder="Share something with {{ g.name }}...  Use #hashtags"
+                    [(ngModel)]="draft"></textarea>
+
+          @if (mediaOpen()) {
+            <div class="media-row">
+              <input class="input" type="url" placeholder="Image URL (optional)" [(ngModel)]="imageUrl" />
+              <input class="input" type="url" placeholder="Video URL (optional)" [(ngModel)]="videoUrl" />
+            </div>
+          }
+
+          @if (postError) { <div class="error-msg">{{ postError }}</div> }
+
+          <div class="composer-foot">
+            <button class="btn btn-ghost btn-sm" (click)="mediaOpen.set(!mediaOpen())">
+              {{ mediaOpen() ? 'Hide media' : 'Add media' }}
+            </button>
+            <button class="btn btn-primary" [disabled]="(!draft.trim() && !imageUrl.trim() && !videoUrl.trim()) || posting"
+                    (click)="publish()">
+              {{ posting ? 'Posting...' : 'Post' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="group-body">
+      <div class="g-posts">
+        @if (loading) {
+          <div class="empty">Loading posts...</div>
+        } @else if (posts.length === 0) {
+          <div class="card empty">
+            <h3>No posts yet</h3>
+            @if (g.is_member) { Be the first to share something in this group! }
+            @else { Join the group to post. }
+          </div>
+        } @else {
+          @for (p of posts; track p.id) {
+            <app-post-card [post]="p" (updated)="onUpdated($event)" />
+          }
+        }
+      </div>
+
+      <div class="g-members">
+        <div class="card">
+          <h3 class="m-title">Members</h3>
+          @for (m of members; track m.id) {
+            <a [routerLink]="['/', m.username]" class="member">
+              <app-avatar [name]="m.full_name" [color]="m.avatar_color" [size]="36"/>
+              <div>
+                <strong>{{ m.full_name }}</strong>
+                <span>@{{ m.username }}</span>
+              </div>
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

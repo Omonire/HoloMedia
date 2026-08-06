@@ -1,0 +1,37 @@
+<div class="auth-wrap">
+  <div class="auth-brand">
+    <div class="brand-mark">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"
+              fill="url(#lg)" opacity=".2"/>
+        <path d="M12 6l2.2 3.8L18 11l-3.8 2.2L12 17l-2.2-3.8L6 11l3.8-1.2L12 6z" fill="url(#lg)"/>
+        <defs><linearGradient id="lg" x1="2" y1="2" x2="22" y2="22">
+          <stop stop-color="#7c3aed"/><stop offset="1" stop-color="#ec4899"/>
+        </linearGradient></defs>
+      </svg>
+    </div>
+    <h1>Welcome back to <span class="gradient-text">HoloMedia</span></h1>
+    <p>Share moments, follow friends, and join the conversation.</p>
+  </div>
+
+  <form class="auth-card card" (ngSubmit)="submit()">
+    <h2>Log in</h2>
+
+    @if (error()) { <div class="error-msg">{{ error() }}</div> }
+
+    <label>Username or email</label>
+    <input class="input" type="text" [ngModel]="username()" (ngModelChange)="username.set($event)"
+           name="username" placeholder="you" autocomplete="username" />
+
+    <label>Password</label>
+    <input class="input" type="password" [ngModel]="password()" (ngModelChange)="password.set($event)"
+           name="password" placeholder="••••••••" autocomplete="current-password" />
+
+    <button class="btn btn-primary btn-lg" type="submit" [disabled]="busy()">
+      {{ busy() ? 'Logging in...' : 'Log in' }}
+    </button>
+
+    <p class="auth-switch">New here? <a routerLink="/register">Create an account</a></p>
+    <p class="demo-tip">Demo account: <code>you</code> / <code>demo1234</code></p>
+  </form>
+</div>

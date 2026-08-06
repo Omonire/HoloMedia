@@ -1,0 +1,72 @@
+<div class="page">
+  <div class="page-title">
+    <h1>Groups</h1>
+    <button class="btn btn-primary" (click)="createOpen.set(true)">+ Create group</button>
+  </div>
+
+  @if (loading) {
+    <div class="empty">Loading groups...</div>
+  } @else if (groups.length === 0) {
+    <div class="card empty">
+      <h3>No groups yet</h3>
+      Create the first group and invite people to join!
+    </div>
+  } @else {
+    @for (g of groups; track g.id) {
+      <div class="card group-row">
+        <a [routerLink]="['/groups', g.id]" class="group-main">
+          <span class="group-icon" [style.background]="g.icon_color">{{ g.name[0] }}</span>
+          <div class="group-info">
+            <strong class="g-name">{{ g.name }}</strong>
+            <span class="g-meta">
+              {{ g.members_count }} members &middot; {{ g.posts_count }} posts
+            </span>
+            @if (g.description) {
+              <span class="g-desc">{{ g.description }}</span>
+            }
+          </div>
+        </a>
+        <div class="group-side">
+          @if (g.is_member) {
+            <span class="member-badge">✓ Member</span>
+          }
+          <button class="btn btn-sm" [class.btn-ghost]="g.is_member" [class.btn-primary]="!g.is_member"
+                  (click)="toggleJoin(g)">
+            {{ g.is_member ? 'Leave' : 'Join' }}
+          </button>
+        </div>
+      </div>
+    }
+  }
+
+  @if (createOpen()) {
+    <div class="modal-backdrop" (click)="createOpen.set(false)">
+      <div class="modal card" (click)="$event.stopPropagation()">
+        <h2>Create group</h2>
+        @if (error) { <div class="error-msg">{{ error }}</div> }
+
+        <label>Group name</label>
+        <input class="input" [(ngModel)]="name" name="name" placeholder="e.g. Design Community" maxlength="80" />
+
+        <label>Description</label>
+        <textarea class="textarea" rows="3" [(ngModel)]="description" name="description"
+                  placeholder="What's this group about?" maxlength="500"></textarea>
+
+        <label>Color</label>
+        <div class="color-row">
+          @for (c of colors; track c) {
+            <button class="color-dot" [style.background]="c"
+                    [class.selected]="color === c" (click)="color = c"></button>
+          }
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-ghost" (click)="createOpen.set(false)">Cancel</button>
+          <button class="btn btn-primary" [disabled]="name.trim().length < 2 || saving" (click)="create()">
+            {{ saving ? 'Creating...' : 'Create' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,27 @@
+.search-results {
+  padding: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  position: absolute;
+  top: 52px;
+  left: 16px;
+  right: 16px;
+  z-index: 20;
+}
+.result {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: left;
+}
+.result:hover { background: var(--surface-2); }
+.res-info { min-width: 0; }
+.res-info strong { display: block; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.res-info span { font-size: 12px; color: var(--text-dim); }

@@ -1,0 +1,33 @@
+<div class="page">
+  <div class="page-title">
+    <a routerLink="/" class="icon-btn" title="Back">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/>
+           <polyline points="12 19 5 12 12 5"/></svg>
+    </a>
+    <h1>Post</h1>
+  </div>
+
+  @if (error()) {
+    <div class="card empty">
+      <h3>Post not found</h3>
+      It may have been deleted. <a routerLink="/" style="color:var(--accent)">Back to home</a>
+    </div>
+  } @else if (post(); as p) {
+    <app-post-card [post]="p" (updated)="post.set($event)"/>
+
+    @if (isMine()) {
+      <div class="own-actions">
+        <a [routerLink]="['/', p.author.username]" class="btn btn-ghost btn-sm">View your profile</a>
+        <button class="btn btn-danger btn-sm" [disabled]="deleting" (click)="deletePost()">
+          {{ deleting ? 'Deleting...' : 'Delete post' }}
+        </button>
+      </div>
+    }
+
+    <div class="card" style="padding: 8px 20px 20px">
+      <h2 class="cm-h">Comments ({{ p.comments_count }})</h2>
+      <app-comments [postId]="p.id" (postChanged)="post.set($event)" />
+    </div>
+  }
+</div>

@@ -1,0 +1,43 @@
+<div class="page">
+  <div class="hero card">
+    <h1 class="gradient-text">Discover HoloMedia</h1>
+    <p>Find people you know and explore what everyone's posting.</p>
+    <div class="hero-search">
+      <input class="input" type="text" placeholder="Search by username or name..."
+             [ngModel]="q()" (ngModelChange)="q.set($event)" (keydown.enter)="search()" />
+      <button class="btn btn-primary" (click)="search()">Search</button>
+    </div>
+  </div>
+
+  @if (searched()) {
+    <div class="page-title"><h1>Results{{ q() ? ' for "' + q() + '"' : '' }}</h1></div>
+
+    @if (searching()) {
+      <div class="empty">Searching...</div>
+    } @else if (users.length === 0) {
+      <div class="card empty"><h3>No people found</h3>Try a different name or username.</div>
+    } @else {
+      <div class="user-grid">
+        @for (u of users; track u.id) {
+          <div class="card user-card">
+            <button class="user-top" (click)="open(u)">
+              <app-avatar [name]="u.full_name" [color]="u.avatar_color" [size]="54"/>
+            </button>
+            <strong class="u-name" (click)="open(u)">{{ u.full_name }}</strong>
+            <span class="u-username" (click)="open(u)">@{{ u.username }}</span>
+            <span class="u-stats">{{ u.followers_count }} followers &middot; {{ u.post_count }} posts</span>
+            <button class="btn btn-sm" [class.btn-primary]="!u.is_following" [class.btn-ghost]="u.is_following"
+                    (click)="follow(u)">
+              {{ u.is_following ? 'Following' : 'Follow' }}
+            </button>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  <div class="page-title"><h1>Latest from everywhere</h1></div>
+  @for (p of posts; track p.id) {
+    <app-post-card [post]="p" (updated)="onUpdated($event)" (openComments)="openPost($event)" />
+  }
+</div>

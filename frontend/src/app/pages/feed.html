@@ -1,0 +1,94 @@
+<div class="page">
+  <div class="composer card">
+    @if (auth.user(); as me) {
+      <app-avatar [name]="me.full_name" [color]="me.avatar_color" [size]="44"/>
+      <div class="composer-main">
+        <div class="mode-switch">
+          <button class="mode-btn" [class.on]="mode() === 'text'" (click)="mode.set('text')">✍️ Text</button>
+          <button class="mode-btn" [class.on]="mode() === 'video'" (click)="mode.set('video')">🎬 Reel</button>
+        </div>
+
+        @if (mode() === 'video') {
+          <input class="input video-input" type="url" placeholder="Paste a video URL (mp4/webm)..."
+                 [(ngModel)]="videoUrl" />
+
+          <div class="sound-row">
+            <span class="sound-label">♪ Sound</span>
+            @if (sound) {
+              <div class="sound-selected">
+                @if (soundArtwork) {
+                  <img [src]="soundArtwork" alt="" class="ss-art" />
+                } @else {
+                  <span class="ss-art ss-art-fallback">♪</span>
+                }
+                <div class="ss-info">
+                  <strong>{{ sound }}</strong>
+                  <span>{{ soundArtist || 'Unknown artist' }}</span>
+                </div>
+                <button type="button" class="icon-btn" title="Remove sound" (click)="clearSound()">✕</button>
+              </div>
+            } @else if (spotifyOk()) {
+              <div class="sound-picker">
+                <input class="input" type="text" placeholder="Search Spotify for a song..."
+                       [(ngModel)]="searchQuery" (input)="onSoundSearch(searchQuery)" />
+                @if (searching()) {
+                  <div class="sound-drop hint">Searching Spotify...</div>
+                } @else if (soundResults.length > 0) {
+                  <div class="sound-drop">
+                    @for (t of soundResults; track t.id) {
+                      <button type="button" class="sound-result" (click)="pickTrack(t)">
+                        <img [src]="t.artwork_url" alt="" class="sr-art" />
+                        <div class="sr-info">
+                          <strong>{{ t.name }}</strong>
+                          <span>{{ t.artist }}</span>
+                        </div>
+                        @if (t.explicit) { <span class="ex-badge">E</span> }
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+            } @else {
+              <input class="input" type="text" list="sound-options" placeholder="Pick or type a sound..."
+                     [(ngModel)]="sound" />
+              <datalist id="sound-options">
+                @for (s of soundSuggestions; track s) { <option [value]="s"></option> }
+              </datalist>
+            }
+          </div>
+        }
+
+        <textarea class="textarea" rows="2"
+                  [placeholder]="mode() === 'text'
+                    ? 'What\'s happening, ' + me.full_name.split(' ')[0] + '?  Use #hashtags'
+                    : 'Add a caption for your reel...  Use #hashtags'"
+                  [(ngModel)]="draft" (keydown.ctrl.enter)="publish()"></textarea>
+
+        @if (error) { <div class="error-msg">{{ error }}</div> }
+
+        <div class="composer-foot">
+          <span class="hint">Ctrl + Enter to post</span>
+            <button class="btn btn-primary" [disabled]="(!draft.trim() && !(mode() === 'video' && videoUrl.trim())) || posting"
+                    (click)="publish()">
+              {{ posting ? 'Posting...' : (mode() === 'video' ? 'Publish reel' : 'Post') }}
+            </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="page-title"><h1>Home</h1></div>
+
+  @if (loading) {
+    <div class="empty">Loading your feed...</div>
+  } @else if (posts.length === 0) {
+    <div class="card empty">
+      <h3>Your feed is quiet</h3>
+      Follow people to see their posts here, or write something yourself.
+    </div>
+  } @else {
+    @for (p of posts; track p.id) {
+      <app-post-card [post]="p" (updated)="onUpdated($event)" (openComments)="openPost($event)" />
+    }
+  }
+</div>

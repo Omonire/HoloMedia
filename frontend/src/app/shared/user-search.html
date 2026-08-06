@@ -1,0 +1,17 @@
+<div class="search-results card">
+  @if (loading) {
+    <div class="empty" style="padding:16px">Searching...</div>
+  } @else if (results.length === 0) {
+    <div class="empty" style="padding:16px">No users found.</div>
+  } @else {
+    @for (u of results; track u.id) {
+      <button class="result" (click)="open(u)">
+        <app-avatar [name]="u.full_name" [color]="u.avatar_color" [size]="36"/>
+        <div class="res-info">
+          <strong>{{ u.full_name }}</strong>
+          <span>@{{ u.username }} &middot; {{ u.post_count }} posts</span>
+        </div>
+      </button>
+    }
+  }
+</div>

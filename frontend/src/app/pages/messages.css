@@ -1,0 +1,24 @@
+.new-chat { padding: 16px; margin-bottom: 16px; }
+.new-results { margin-top: 10px; max-height: 200px; overflow-y: auto; }
+.result {
+  width: 100%; display: flex; align-items: center; gap: 10px;
+  background: none; border: none; color: var(--text); cursor: pointer;
+  padding: 8px; border-radius: 10px; text-align: left;
+}
+.result:hover { background: var(--surface-2); }
+.r-name { font-weight: 600; font-size: 14px; }
+.r-user { color: var(--text-dim); font-size: 13px; }
+
+.convo-list { padding: 6px; }
+.convo {
+  width: 100%; display: flex; align-items: center; gap: 12px;
+  background: none; border: none; color: var(--text); cursor: pointer;
+  padding: 12px; border-radius: 12px; text-align: left; position: relative;
+}
+.convo:hover { background: var(--surface-2); }
+.convo-body { flex: 1; min-width: 0; }
+.convo-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.convo-top strong { font-size: 15px; }
+.c-time { color: var(--text-dim); font-size: 12px; }
+.preview { display: block; color: var(--text-dim); font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.unread-badge { position: static; margin-left: 4px; }

@@ -1,0 +1,44 @@
+<div class="auth-wrap">
+  <div class="auth-brand">
+    <div class="brand-mark">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"
+              fill="url(#lg)" opacity=".2"/>
+        <path d="M12 6l2.2 3.8L18 11l-3.8 2.2L12 17l-2.2-3.8L6 11l3.8-1.2L12 6z" fill="url(#lg)"/>
+        <defs><linearGradient id="lg" x1="2" y1="2" x2="22" y2="22">
+          <stop stop-color="#7c3aed"/><stop offset="1" stop-color="#ec4899"/>
+        </linearGradient></defs>
+      </svg>
+    </div>
+    <h1>Join <span class="gradient-text">HoloMedia</span> today</h1>
+    <p>Create a profile, post updates, and connect with the people you love.</p>
+  </div>
+
+  <form class="auth-card card" (ngSubmit)="submit()">
+    <h2>Create your account</h2>
+
+    @if (error()) { <div class="error-msg">{{ error() }}</div> }
+
+    <label>Full name</label>
+    <input class="input" type="text" [ngModel]="fullName()" (ngModelChange)="fullName.set($event)"
+           name="full_name" placeholder="Jane Doe" autocomplete="name" />
+
+    <label>Username</label>
+    <input class="input" type="text" [ngModel]="username()" (ngModelChange)="username.set($event)"
+           name="username" placeholder="jane" autocomplete="username" />
+
+    <label>Email</label>
+    <input class="input" type="email" [ngModel]="email()" (ngModelChange)="email.set($event)"
+           name="email" placeholder="jane@example.com" autocomplete="email" />
+
+    <label>Password</label>
+    <input class="input" type="password" [ngModel]="password()" (ngModelChange)="password.set($event)"
+           name="password" placeholder="At least 6 characters" autocomplete="new-password" />
+
+    <button class="btn btn-primary btn-lg" type="submit" [disabled]="busy()">
+      {{ busy() ? 'Creating...' : 'Sign up' }}
+    </button>
+
+    <p class="auth-switch">Already have an account? <a routerLink="/login">Log in</a></p>
+  </form>
+</div>

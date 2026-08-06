@@ -1,0 +1,25 @@
+<div class="page">
+  <div class="page-title">
+    <a routerLink="/" class="icon-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/>
+           <polyline points="12 19 5 12 12 5"/></svg>
+    </a>
+    <div>
+      <h1 class="gradient-text">#{{ tag() }}</h1>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="empty">Loading posts...</div>
+  } @else if (posts.length === 0) {
+    <div class="card empty">
+      <h3>No posts with #{{ tag() }}</h3>
+      Be the first to post about it!
+    </div>
+  } @else {
+    @for (p of posts; track p.id) {
+      <app-post-card [post]="p" (updated)="onUpdated($event)" (openComments)="openPost($event)" />
+    }
+  }
+</div>

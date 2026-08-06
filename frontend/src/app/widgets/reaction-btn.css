@@ -1,0 +1,49 @@
+.react-wrap { position: relative; }
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: background .15s, color .15s;
+}
+.action:hover { background: var(--surface-2); color: var(--text); }
+.action.liked { color: var(--danger); }
+.my-reaction { font-size: 17px; }
+
+.reaction-picker {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  display: flex;
+  gap: 2px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 8px;
+  box-shadow: var(--shadow);
+  z-index: 30;
+  animation: pop .15s ease;
+}
+@keyframes pop {
+  from { transform: translateY(6px) scale(.9); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.reaction {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  padding: 4px;
+  border-radius: 50%;
+  transition: transform .12s;
+}
+.reaction:hover { transform: scale(1.35); }
