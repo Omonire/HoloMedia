@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -13,6 +14,14 @@ _CREDS_FILE = os.path.join(BASE_DIR, "spotify_creds.json")
 
 _token = None
 _token_expires_at = 0
+
+_premium_blocked = False
+_probe_at = 0.0
+_PROBE_TTL = 300
+
+
+class SpotifyPremiumRequired(RuntimeError):
+    pass
 
 
 def _load_creds():
@@ -32,6 +41,29 @@ def _load_creds():
 def is_configured():
     client_id, client_secret = _load_creds()
     return bool(client_id and client_secret)
+
+
+def available():
+    """True only when creds exist AND Spotify actually allows API calls.
+
+    Probes the API once per _PROBE_TTL and remembers the result, so an app
+    owner account without Premium degrades gracefully to the free-text sound
+    picker, then recovers automatically once Premium is active.
+    """
+    global _premium_blocked, _probe_at
+    if not is_configured():
+        return False
+    if time.time() - _probe_at < _PROBE_TTL:
+        return not _premium_blocked
+    _probe_at = time.time()
+    try:
+        search_tracks("probe", limit=1)
+        _premium_blocked = False
+    except SpotifyPremiumRequired:
+        _premium_blocked = True
+    except Exception:
+        pass
+    return not _premium_blocked
 
 
 def _get_token():
@@ -68,8 +100,20 @@ def _api_get(url):
         url,
         headers={"Authorization": f"Bearer {_get_token()}"},
     )
-    with urllib.request.urlopen(req, timeout=15) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        body = ""
+        try:
+            body = e.read().decode("utf-8", "replace")
+        except Exception:
+            pass
+        if e.code == 403 and "premium" in body.lower():
+            raise SpotifyPremiumRequired(
+                "Spotify requires an active Premium subscription for the app owner."
+            ) from e
+        raise
 
 
 def search_tracks(query, limit=8):

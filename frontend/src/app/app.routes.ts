@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, guestGuard } from './guards/auth.guard';
+import { authGuard, guestGuard, adminGuard } from './guards/auth.guard';
 import { AppShellComponent } from './layout/app-shell.component';
 import { LoginComponent } from './pages/login.component';
 import { RegisterComponent } from './pages/register.component';
@@ -16,6 +16,7 @@ import { GroupsComponent } from './pages/groups.component';
 import { GroupDetailComponent } from './pages/group-detail.component';
 import { SoundsComponent } from './pages/sounds.component';
 import { ProfileComponent } from './pages/profile.component';
+import { AdminComponent } from './pages/admin.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
@@ -37,6 +38,7 @@ export const routes: Routes = [
       { path: 'p/:id', component: PostDetailComponent },
       { path: 'hashtag/:tag', component: HashtagComponent },
       { path: 'bookmarks', component: BookmarksComponent },
+      { path: 'admin', component: AdminComponent, canActivate: [adminGuard] },
       { path: ':username', component: ProfileComponent },
     ],
   },

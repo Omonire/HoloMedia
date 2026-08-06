@@ -5,4 +5,3 @@ flask-cors
 flask-socketio
 python-dotenv
 psycopg2-binary
-gunicorn

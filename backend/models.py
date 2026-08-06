@@ -31,6 +31,8 @@ class User(db.Model):
     password_hash = db.Column(db.String(200), nullable=False)
     bio = db.Column(db.String(240), default="")
     avatar_color = db.Column(db.String(9), default="#7c3aed")
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
+    is_suspended = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(db.DateTime, default=utcnow)
 
     posts = db.relationship("Post", backref="author", lazy="dynamic",
@@ -60,6 +62,8 @@ class User(db.Model):
             "full_name": self.full_name,
             "bio": self.bio or "",
             "avatar_color": self.avatar_color,
+            "is_admin": self.is_admin,
+            "is_suspended": self.is_suspended,
             "created_at": self.created_at.isoformat(),
             "post_count": self.posts.count(),
             "followers_count": self.followers.count(),
@@ -69,6 +73,34 @@ class User(db.Model):
             data["is_following"] = viewer.is_following(self)
             data["is_self"] = viewer.id == self.id
         return data
+
+
+class Upload(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    mime_type = db.Column(db.String(100), nullable=False)
+    size = db.Column(db.Integer, nullable=False)
+    data = db.Column(db.LargeBinary, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow)
+
+    author = db.relationship("User", backref=db.backref("uploads", lazy="dynamic"))
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "filename": self.filename,
+            "mime_type": self.mime_type,
+            "size": self.size,
+            "url": f"/api/uploads/video/{self.id}",
+            "created_at": self.created_at.isoformat(),
+            "author": self.author.to_dict(),
+        }
+
+
+class Setting(db.Model):
+    key = db.Column(db.String(64), primary_key=True)
+    value = db.Column(db.Text, default="")
 
 
 class Group(db.Model):

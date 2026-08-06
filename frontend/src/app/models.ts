@@ -4,6 +4,8 @@ export interface User {
   full_name: string;
   bio: string;
   avatar_color: string;
+  is_admin: boolean;
+  is_suspended: boolean;
   created_at: string;
   post_count: number;
   followers_count: number;

@@ -71,6 +71,7 @@ export class FeedComponent {
         error: () => {
           this.searching.set(false);
           this.soundResults = [];
+          this.spotifyOk.set(false);
         },
       });
   }
@@ -111,8 +112,8 @@ export class FeedComponent {
     const content = this.draft.trim();
     const video = this.mode() === 'video' ? this.videoUrl.trim() : '';
     if ((!content && !video) || this.posting) return;
-    if (video && !/^https?:\/\//i.test(video)) {
-      this.error = 'Video URL must start with http:// or https://';
+    if (video && !/^(https?:\/\/|\/api\/uploads\/)/i.test(video)) {
+      this.error = 'Video must be a URL (http/https) or an uploaded file.';
       return;
     }
     this.posting = true;
@@ -137,6 +138,29 @@ export class FeedComponent {
       error: (e) => {
         this.error = e.message;
         this.posting = false;
+      },
+    });
+  }
+
+  uploading = false;
+  uploadError = '';
+
+  onVideoFile(file: File | null): void {
+    this.uploadError = '';
+    if (!file) return;
+    if (!file.type.startsWith('video/')) {
+      this.uploadError = 'Please choose a video file.';
+      return;
+    }
+    this.uploading = true;
+    this.api.uploadVideo<{ url: string }>(file).subscribe({
+      next: (r) => {
+        this.videoUrl = r.url;
+        this.uploading = false;
+      },
+      error: (e) => {
+        this.uploadError = e.message;
+        this.uploading = false;
       },
     });
   }

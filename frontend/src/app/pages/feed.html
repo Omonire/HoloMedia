@@ -9,8 +9,18 @@
         </div>
 
         @if (mode() === 'video') {
-          <input class="input video-input" type="url" placeholder="Paste a video URL (mp4/webm)..."
-                 [(ngModel)]="videoUrl" />
+          <div class="video-input-row">
+            <input class="input video-input" type="url" placeholder="Paste a video URL (mp4/webm)..."
+                   [(ngModel)]="videoUrl" />
+            <label class="btn upload-btn">
+              {{ uploading ? 'Uploading…' : 'Upload video' }}
+              <input type="file" accept="video/*" hidden (change)="onVideoFile($any($event.target).files?.[0] ?? null)" />
+            </label>
+          </div>
+          @if (videoUrl) {
+            <video class="video-preview" [src]="videoUrl" muted controls playsinline></video>
+          }
+          @if (uploadError) { <div class="error-msg">{{ uploadError }}</div> }
 
           <div class="sound-row">
             <span class="sound-label">♪ Sound</span>

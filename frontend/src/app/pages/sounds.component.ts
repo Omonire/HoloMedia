@@ -69,6 +69,7 @@ export class SoundsComponent {
         error: () => {
           this.searching.set(false);
           this.results = [];
+          this.spotifyOk.set(false);
         },
       });
   }

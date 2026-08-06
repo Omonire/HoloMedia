@@ -116,6 +116,29 @@ export class GroupDetailComponent {
     });
   }
 
+  uploading = false;
+  uploadError = '';
+
+  onVideoFile(file: File | null): void {
+    this.uploadError = '';
+    if (!file) return;
+    if (!file.type.startsWith('video/')) {
+      this.uploadError = 'Please choose a video file.';
+      return;
+    }
+    this.uploading = true;
+    this.api.uploadVideo<{ url: string }>(file).subscribe({
+      next: (r) => {
+        this.videoUrl = r.url;
+        this.uploading = false;
+      },
+      error: (e) => {
+        this.uploadError = e.message;
+        this.uploading = false;
+      },
+    });
+  }
+
   onUpdated(p: Post): void {
     this.posts = this.posts.map((x) => (x.id === p.id ? p : x));
   }

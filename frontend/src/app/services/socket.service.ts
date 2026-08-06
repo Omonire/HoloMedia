@@ -2,7 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { NotificationsService } from './notifications.service';
 
-const SOCKET_URL = 'http://localhost:5000';
+const isLocal = typeof window !== 'undefined'
+  && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const SOCKET_URL = isLocal ? 'http://localhost:5000' : window.location.origin;
 
 @Injectable({ providedIn: 'root' })
 export class SocketService {

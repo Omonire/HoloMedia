@@ -5,6 +5,7 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 
 from extensions import db
 from models import User
+from settings import is_registration_open, is_maintenance_mode
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 
@@ -19,6 +20,8 @@ def _valid_email(email):
 
 @auth_bp.post("/register")
 def register():
+    if not is_registration_open():
+        return jsonify(error="New registrations are currently closed."), 403
     data = request.get_json(silent=True) or {}
     username = (data.get("username") or "").strip().lower()
     email = (data.get("email") or "").strip().lower()
@@ -59,6 +62,8 @@ def login():
 
     if not user or not user.check_password(password):
         return jsonify(error="Invalid username or password."), 401
+    if user.is_suspended:
+        return jsonify(error="This account has been suspended."), 403
 
     token = create_access_token(identity=str(user.id))
     return jsonify(token=token, user=user.to_dict())
@@ -70,6 +75,8 @@ def me():
     user = db.session.get(User, int(get_jwt_identity()))
     if not user:
         return jsonify(error="User not found."), 404
+    if user.is_suspended:
+        return jsonify(error="This account has been suspended."), 403
     return jsonify(user=user.to_dict(viewer=user))
 
 

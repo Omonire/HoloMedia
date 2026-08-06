@@ -3,7 +3,11 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-export const API_URL = 'http://localhost:5000/api';
+const isLocal = typeof window !== 'undefined'
+  && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+export const API_URL = isLocal && window.location.port !== '5000'
+  ? 'http://localhost:5000/api'
+  : '/api';
 
 export class ApiError {
   constructor(public status: number, public message: string) {}
@@ -50,8 +54,20 @@ export class ApiService {
       .pipe(catchError((e) => this.handle(e)));
   }
 
+  patch<T>(path: string, body?: unknown): Observable<T> {
+    return this.http.patch<T>(`${API_URL}${path}`, body ?? {}, { headers: this.headers() })
+      .pipe(catchError((e) => this.handle(e)));
+  }
+
   delete<T>(path: string): Observable<T> {
     return this.http.delete<T>(`${API_URL}${path}`, { headers: this.headers() })
+      .pipe(catchError((e) => this.handle(e)));
+  }
+
+  uploadVideo<T>(file: File): Observable<T> {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<T>(`${API_URL}/uploads/video`, form, { headers: this.headers() })
       .pipe(catchError((e) => this.handle(e)));
   }
 }

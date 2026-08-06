@@ -5,7 +5,12 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_req
 
 from extensions import db
 from models import User, Post, Like, Comment, Bookmark, Notification
-from spotify import is_configured, search_tracks
+from spotify import (
+    SpotifyPremiumRequired,
+    available,
+    is_configured,
+    search_tracks,
+)
 
 posts_bp = Blueprint("posts", __name__, url_prefix="/api/posts")
 
@@ -25,7 +30,7 @@ def extract_hashtags(content):
 
 @posts_bp.get("/spotify/config")
 def spotify_config():
-    return jsonify(configured=is_configured())
+    return jsonify(configured=available())
 
 
 @posts_bp.get("/spotify/search")
@@ -37,6 +42,8 @@ def spotify_search():
         return jsonify(tracks=[])
     try:
         return jsonify(tracks=search_tracks(query))
+    except SpotifyPremiumRequired:
+        return jsonify(error="Spotify requires an active Premium subscription for the app owner. Pick or type a free sound instead."), 503
     except Exception:
         return jsonify(error="Spotify search failed. Please try again."), 502
 

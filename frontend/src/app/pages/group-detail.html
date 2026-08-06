@@ -39,8 +39,18 @@
           @if (mediaOpen()) {
             <div class="media-row">
               <input class="input" type="url" placeholder="Image URL (optional)" [(ngModel)]="imageUrl" />
-              <input class="input" type="url" placeholder="Video URL (optional)" [(ngModel)]="videoUrl" />
+              <div class="video-upload-row">
+                <input class="input" type="url" placeholder="Video URL (optional)" [(ngModel)]="videoUrl" />
+                <label class="btn upload-btn">
+                  {{ uploading ? 'Uploading…' : 'Upload video' }}
+                  <input type="file" accept="video/*" hidden (change)="onVideoFile($any($event.target).files?.[0] ?? null)" />
+                </label>
+              </div>
             </div>
+            @if (videoUrl) {
+              <video class="video-preview" [src]="videoUrl" muted controls playsinline></video>
+            }
+            @if (uploadError) { <div class="error-msg">{{ uploadError }}</div> }
           }
 
           @if (postError) { <div class="error-msg">{{ postError }}</div> }

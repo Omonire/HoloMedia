@@ -20,6 +20,9 @@ realtime_debug.log
 # Node / Angular
 node_modules/
 dist/
+!frontend/dist/
+frontend/dist/*
+!frontend/dist/social-app/
 .angular/
 npm-debug.log*
 

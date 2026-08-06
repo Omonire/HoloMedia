@@ -1,0 +1,193 @@
+<div class="page">
+  <div class="admin-head">
+    <div class="page-title"><h1>Admin</h1></div>
+    <div class="admin-tabs">
+      <button class="tab-btn" [class.on]="tab() === 'dashboard'" (click)="setTab('dashboard')">Dashboard</button>
+      <button class="tab-btn" [class.on]="tab() === 'users'" (click)="setTab('users')">Users</button>
+      <button class="tab-btn" [class.on]="tab() === 'posts'" (click)="setTab('posts')">Posts</button>
+      <button class="tab-btn" [class.on]="tab() === 'comments'" (click)="setTab('comments')">Comments</button>
+      <button class="tab-btn" [class.on]="tab() === 'groups'" (click)="setTab('groups')">Groups</button>
+      <button class="tab-btn" [class.on]="tab() === 'settings'" (click)="setTab('settings')">Settings</button>
+    </div>
+  </div>
+
+  @if (error) { <div class="error-msg">{{ error }}</div> }
+
+  @switch (tab()) {
+    @case ('dashboard') {
+      @if (stats(); as s) {
+        <div class="stat-grid">
+          @for (item of statItems(); track item.key) {
+            <div class="stat-card card">
+              <strong>{{ s[item.key] ?? 0 }}</strong>
+              <span>{{ item.label }}</span>
+            </div>
+          }
+        </div>
+      }
+    }
+
+    @case ('users') {
+      <div class="card admin-panel">
+        <div class="toolbar">
+          <input class="input" type="text" placeholder="Search users by name, username, or email..."
+                 [(ngModel)]="userQ" (keydown.enter)="onUserSearch()" />
+          <button class="btn" (click)="onUserSearch()">Search</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>User</th><th>Email</th><th>Posts</th><th>Role</th><th>Status</th><th>Joined</th><th></th></tr>
+            </thead>
+            <tbody>
+              @for (u of users(); track u.id) {
+                <tr>
+                  <td>
+                    <div class="cell-user">
+                      <app-avatar [name]="u.full_name" [color]="u.avatar_color" [size]="30"/>
+                      <div>
+                        <strong>{{ u.full_name }}</strong>
+                        <span>@{{ u.username }}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ u.email }}</td>
+                  <td>{{ u.post_count }}</td>
+                  <td>
+                    <button class="badge-btn" [class.on]="u.is_admin"
+                            [disabled]="auth.user()?.id === u.id" (click)="toggleAdmin(u)"
+                            title="Toggle admin">
+                      {{ u.is_admin ? 'Admin' : 'Make admin' }}
+                    </button>
+                  </td>
+                  <td>
+                    <button class="badge-btn warn" [class.on]="u.is_suspended"
+                            [disabled]="auth.user()?.id === u.id" (click)="toggleSuspend(u)">
+                      {{ u.is_suspended ? 'Suspended' : 'Suspend' }}
+                    </button>
+                  </td>
+                  <td>{{ fmtDate(u.created_at) }}</td>
+                  <td>
+                    <button class="btn btn-danger btn-sm" [disabled]="auth.user()?.id === u.id"
+                            (click)="deleteUser(u)">Delete</button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr><td colspan="7" class="empty">No users found.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    @case ('posts') {
+      <div class="card admin-panel">
+        <div class="toolbar">
+          <input class="input" type="text" placeholder="Search post content..."
+                 [(ngModel)]="postQ" (keydown.enter)="loadPosts(postQ)" />
+          <button class="btn" (click)="loadPosts(postQ)">Search</button>
+        </div>
+        @for (p of posts(); track p.id) {
+          <div class="row-item">
+            <div class="row-main">
+              <div class="cell-user">
+                <app-avatar [name]="p.author.full_name" [color]="p.author.avatar_color" [size]="28"/>
+                <div>
+                  <strong>@{{ p.author.username }}</strong>
+                  <span class="muted">#{{ p.id }} · {{ fmtDate(p.created_at) }}</span>
+                </div>
+              </div>
+              <p>{{ p.content || (p.video_url ? '🎬 Reel' : p.image_url ? '🖼 Image' : '') }}</p>
+              <span class="muted">{{ p.likes_count }} likes · {{ p.comments_count }} comments
+                @if (p.sound) { · ♪ {{ p.sound }} }</span>
+            </div>
+            <button class="btn btn-danger btn-sm" (click)="deletePost(p)">Delete</button>
+          </div>
+        } @empty {
+          <div class="empty">No posts found.</div>
+        }
+      </div>
+    }
+
+    @case ('comments') {
+      <div class="card admin-panel">
+        <div class="toolbar">
+          <input class="input" type="text" placeholder="Search comments..."
+                 [(ngModel)]="commentQ" (keydown.enter)="loadComments(commentQ)" />
+          <button class="btn" (click)="loadComments(commentQ)">Search</button>
+        </div>
+        @for (c of comments(); track c.id) {
+          <div class="row-item">
+            <div class="row-main">
+              <div class="cell-user">
+                <app-avatar [name]="c.author.full_name" [color]="c.author.avatar_color" [size]="28"/>
+                <div>
+                  <strong>@{{ c.author.username }}</strong>
+                  <span class="muted">#{{ c.id }} · on post #{{ c.post_id }} · {{ fmtDate(c.created_at) }}</span>
+                </div>
+              </div>
+              <p>{{ c.content }}</p>
+            </div>
+            <button class="btn btn-danger btn-sm" (click)="deleteComment(c)">Delete</button>
+          </div>
+        } @empty {
+          <div class="empty">No comments found.</div>
+        }
+      </div>
+    }
+
+    @case ('groups') {
+      <div class="card admin-panel">
+        @for (g of groups(); track g.id) {
+          <div class="row-item">
+            <div class="row-main">
+              <div class="cell-user">
+                <span class="g-avatar" [style.background]="g.icon_color">{{ g.name[0] }}</span>
+                <div>
+                  <strong>{{ g.name }}</strong>
+                  <span class="muted">by @{{ g.creator.username }} · {{ fmtDate(g.created_at) }}</span>
+                </div>
+              </div>
+              <p>{{ g.description }}</p>
+              <span class="muted">{{ g.members_count }} members · {{ g.posts_count }} posts</span>
+            </div>
+            <button class="btn btn-danger btn-sm" (click)="deleteGroup(g)">Delete</button>
+          </div>
+        } @empty {
+          <div class="empty">No groups found.</div>
+        }
+      </div>
+    }
+
+    @case ('settings') {
+      @if (settings(); as s) {
+        <div class="card admin-panel settings-panel">
+          <label class="field">
+            <span>Site name</span>
+            <input class="input" [(ngModel)]="s['site_name']" />
+          </label>
+          <label class="field">
+            <span>Tagline</span>
+            <input class="input" [(ngModel)]="s['tagline']" />
+          </label>
+          <label class="field">
+            <span>Max upload size (MB)</span>
+            <input class="input" type="number" [(ngModel)]="s['max_upload_mb']" />
+          </label>
+          <label class="check">
+            <input type="checkbox" [checked]="isTrue('registration_open')"
+                   (change)="setBool('registration_open', $any($event.target).checked)" />
+            <span>Allow new registrations</span>
+          </label>
+          <label class="check">
+            <input type="checkbox" [checked]="isTrue('maintenance_mode')"
+                   (change)="setBool('maintenance_mode', $any($event.target).checked)" />
+            <span>Maintenance mode</span>
+          </label>
+          <button class="btn btn-primary" (click)="saveSettings()">Save settings</button>
+        </div>
+      }
+    }
+  }
+</div>

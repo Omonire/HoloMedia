@@ -14,6 +14,10 @@
 }
 .mode-btn.on { background: var(--gradient); color: #fff; border-color: transparent; }
 .video-input { margin-bottom: 10px; }
+.video-input-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.video-input-row .video-input { flex: 1; margin-bottom: 0; }
+.upload-btn { white-space: nowrap; cursor: pointer; }
+.video-preview { width: 100%; max-height: 240px; border-radius: 12px; margin-bottom: 10px; background: #000; }
 .sound-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
 .sound-label { font-size: 13px; font-weight: 600; color: var(--text-dim); white-space: nowrap; padding-top: 9px; }
 .sound-picker { position: relative; flex: 1; min-width: 0; }

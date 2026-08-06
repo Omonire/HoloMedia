@@ -1,7 +1,8 @@
 from app import app
 from extensions import db
 from models import (User, Post, Like, Comment, Message, Notification,
-                    Bookmark, Group)
+                    Bookmark, Group, Setting)
+from settings import SETTING_DEFAULTS
 
 VIDEOS = [
     "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
@@ -55,10 +56,14 @@ def seed():
 
         demo = User(username="you", email="you@holomedia.io",
                     full_name="You", bio="This is your demo account. Go wild.",
-                    avatar_color="#8b5cf6")
+                    avatar_color="#8b5cf6", is_admin=True)
         demo.set_password("demo1234")
         db.session.add(demo)
         users["you"] = demo
+        db.session.flush()
+
+        for key, value in SETTING_DEFAULTS.items():
+            db.session.add(Setting(key=key, value=value))
         db.session.flush()
 
         follows = [
@@ -84,6 +89,11 @@ def seed():
             ("devmike", "Wrote my first Rust program today. Ownership makes sense now! #coding #ai", None, None, None),
             ("lena", "Visualizing 10 years of weather data. The patterns are stunning. #data", None, None, None),
             ("you", "Welcome to HoloMedia! This is your first post. Like, comment, and follow people to fill your feed. #holomedia", None, None, None),
+            ("sarah", "Behind the lens: how I edit my night shots. #photography #travel", IMAGES[1], None, None),
+            ("omar", "Track of the day — looping this on repeat. #music", None, None, None),
+            ("alex", "Accessibility is not a feature, it's the baseline. #design #tech", None, None, None),
+            ("lena", "My setup: three monitors, one espresso machine, zero social life. #data #coding", IMAGES[0], None, None),
+            ("devmike", "Today I learned: the bug was between the chair and the keyboard. #coding", None, None, None),
             # TikTok-style reels with sounds
             ("sarah", "POV: you finally caught the perfect wave #travel #ocean", None, VIDEOS[0], SOUNDS[0]),
             ("omar", "Behind the scenes of the new single. The studio never sleeps. #music", None, VIDEOS[1], SOUNDS[1]),
@@ -91,6 +101,9 @@ def seed():
             ("lena", "Rainy day + data = my happy place #data", None, VIDEOS[3], SOUNDS[3]),
             ("devmike", "Fastest way to break prod: deploy on a Friday. #coding #ai", None, VIDEOS[4], SOUNDS[4]),
             ("sarah", "City lights, big dreams. #travel #photography", None, VIDEOS[5], SOUNDS[5]),
+            ("omar", "Live loop session — everything you hear is one take. #music #producer", None, VIDEOS[1], SOUNDS[1]),
+            ("devmike", "Day in the life of a remote dev. #coding #tech", None, VIDEOS[2], SOUNDS[4]),
+            ("sarah", "Slow mornings > fast everything. #travel #photography", None, VIDEOS[3], SOUNDS[5]),
         ]
 
         posts = []
@@ -158,9 +171,9 @@ def seed():
             (posts[4], "sarah", "Can't wait for the drop!"),
             (posts[3], "devmike", "Love the color palette."),
             (posts[7], "omar", "Rust is the way."),
-            (posts[10], "you", "That wave is unreal 😍"),
-            (posts[12], "you", "This is so cool!"),
-            (posts[14], "alex", "Painfully accurate 😂"),
+            (posts[15], "you", "That wave is unreal 😍"),
+            (posts[17], "you", "This is so cool!"),
+            (posts[19], "alex", "Painfully accurate 😂"),
         ]
         for p, uname, content in comments:
             db.session.add(Comment(user_id=users[uname].id, post_id=p.id, content=content))
@@ -173,15 +186,15 @@ def seed():
             (posts[4], "alex", "like"), (posts[4], "sarah", "love"),
             (posts[9], "alex", "like"), (posts[9], "sarah", "love"), (posts[9], "devmike", "like"),
             (posts[9], "lena", "wow"), (posts[9], "omar", "haha"),
-            (posts[10], "you", "love"), (posts[10], "alex", "wow"),
-            (posts[12], "you", "love"), (posts[12], "sarah", "like"),
-            (posts[14], "alex", "haha"), (posts[14], "you", "haha"),
-            (posts[11], "you", "like"), (posts[15], "you", "love"),
+            (posts[15], "you", "love"), (posts[15], "alex", "wow"),
+            (posts[17], "you", "love"), (posts[17], "sarah", "like"),
+            (posts[19], "alex", "haha"), (posts[19], "you", "haha"),
+            (posts[16], "you", "like"), (posts[20], "you", "love"),
         ]
         for p, uname, kind in reaction_specs:
             db.session.add(Like(user_id=users[uname].id, post_id=p.id, kind=kind))
 
-        bookmarks = [(posts[12], "you"), (posts[1], "you"), (posts[8], "you")]
+        bookmarks = [(posts[17], "you"), (posts[1], "you"), (posts[8], "you")]
         for p, uname in bookmarks:
             db.session.add(Bookmark(user_id=users[uname].id, post_id=p.id))
 

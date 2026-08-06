@@ -49,6 +49,22 @@ export class AuthService {
     this.user.set(r.user);
   }
 
+  whenReady(): Promise<User | null> {
+    if (!this.loading()) return Promise.resolve(this.user());
+    return new Promise((resolve) => {
+      const sub = { unsub: () => {} };
+      const check = () => {
+        if (!this.loading()) {
+          sub.unsub();
+          resolve(this.user());
+        }
+      };
+      check();
+      const id = setInterval(check, 50);
+      sub.unsub = () => clearInterval(id);
+    });
+  }
+
   logout(): void {
     this.clear();
     this.router.navigate(['/login']);
