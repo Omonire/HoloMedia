@@ -2,13 +2,13 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "builds": [
-    { "src": "frontend/dist/social-app/**", "use": "@vercel/static" },
+    { "src": "frontend/dist/social-app/browser/**", "use": "@vercel/static" },
     { "src": "api/index.py", "use": "@vercel/python" }
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "api/index.py" },
     { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "frontend/dist/social-app/index.html" }
+    { "src": "/(.*)", "dest": "frontend/dist/social-app/browser/index.html" }
   ],
   "env": {
     "CORS_ORIGINS": "*"
