@@ -1,4 +1,6 @@
-from flask import Flask, jsonify
+import os
+
+from flask import Flask, jsonify, send_from_directory
 
 from config import Config
 from extensions import db, jwt, cors, socketio
@@ -6,6 +8,11 @@ from models import User, Post, Like, Comment, Message, Notification, Bookmark, G
 from routes import ALL_BLUEPRINTS
 from settings import is_maintenance_mode
 import realtime  # noqa: F401  (registers socket.io handlers)
+
+FRONTEND_DIR = os.path.normpath(
+    os.path.join(os.path.dirname(__file__), "..", "frontend",
+                 "dist", "social-app", "browser")
+)
 
 
 def create_app():
@@ -35,6 +42,19 @@ def create_app():
     def suggestions():
         users = User.query.order_by(User.followers.count().desc()).limit(5).all()
         return jsonify(users=[u.to_dict() for u in users])
+
+    @app.get("/")
+    def frontend_index():
+        return send_from_directory(FRONTEND_DIR, "index.html")
+
+    @app.get("/<path:filename>")
+    def frontend_files(filename):
+        if filename.startswith("api/"):
+            return jsonify(error="Not found."), 404
+        full = os.path.join(FRONTEND_DIR, filename)
+        if os.path.isfile(full):
+            return send_from_directory(FRONTEND_DIR, filename)
+        return send_from_directory(FRONTEND_DIR, "index.html")
 
     @app.errorhandler(404)
     def not_found(_):
