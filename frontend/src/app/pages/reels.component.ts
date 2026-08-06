@@ -4,10 +4,11 @@ import { ApiService } from '../services/api.service';
 import { Post } from '../models';
 import { AvatarComponent } from '../shared/avatar.component';
 import { splitContent, reactionEmoji } from '../shared/hashtags';
+import { ShimmerComponent } from '../shared/shimmer.component';
 
 @Component({
   selector: 'app-reels',
-  imports: [RouterLink, AvatarComponent],
+  imports: [RouterLink, AvatarComponent, ShimmerComponent],
   templateUrl: './reels.html',
   styleUrl: './reels.css',
 })

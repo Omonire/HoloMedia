@@ -5,10 +5,11 @@ import { NotificationsService } from '../services/notifications.service';
 import { NotificationItem } from '../models';
 import { AvatarComponent } from '../shared/avatar.component';
 import { TimeAgoPipe } from '../shared/timeago.pipe';
+import { ShimmerComponent } from '../shared/shimmer.component';
 
 @Component({
   selector: 'app-notifications',
-  imports: [RouterLink, AvatarComponent, TimeAgoPipe],
+  imports: [RouterLink, AvatarComponent, TimeAgoPipe, ShimmerComponent],
   templateUrl: './notifications.html',
   styleUrl: './notifications.css',
 })

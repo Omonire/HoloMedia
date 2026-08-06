@@ -4,8 +4,12 @@
       <app-avatar [name]="me.full_name" [color]="me.avatar_color" [size]="44"/>
       <div class="composer-main">
         <div class="mode-switch">
-          <button class="mode-btn" [class.on]="mode() === 'text'" (click)="mode.set('text')">✍️ Text</button>
-          <button class="mode-btn" [class.on]="mode() === 'video'" (click)="mode.set('video')">🎬 Reel</button>
+          <button class="mode-btn" [class.on]="mode() === 'text'" (click)="mode.set('text')">
+            <span class="mb-icon">✍️</span><span class="btn-label">Text</span>
+          </button>
+          <button class="mode-btn" [class.on]="mode() === 'video'" (click)="mode.set('video')">
+            <span class="mb-icon">🎬</span><span class="btn-label">Reel</span>
+          </button>
         </div>
 
         @if (mode() === 'video') {
@@ -13,7 +17,12 @@
             <input class="input video-input" type="url" placeholder="Paste a video URL (mp4/webm)..."
                    [(ngModel)]="videoUrl" />
             <label class="btn upload-btn">
-              {{ uploading ? 'Uploading…' : 'Upload video' }}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <span class="btn-label">{{ uploading ? 'Uploading…' : 'Upload video' }}</span>
               <input type="file" accept="video/*" hidden (change)="onVideoFile($any($event.target).files?.[0] ?? null)" />
             </label>
           </div>
@@ -90,7 +99,7 @@
   <div class="page-title"><h1>Home</h1></div>
 
   @if (loading) {
-    <div class="empty">Loading your feed...</div>
+    <app-shimmer type="feed" [n]="4" />
   } @else if (posts.length === 0) {
     <div class="card empty">
       <h3>Your feed is quiet</h3>

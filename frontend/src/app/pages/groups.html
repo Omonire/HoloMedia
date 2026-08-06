@@ -1,11 +1,17 @@
 <div class="page">
   <div class="page-title">
     <h1>Groups</h1>
-    <button class="btn btn-primary" (click)="createOpen.set(true)">+ Create group</button>
+    <button class="btn btn-primary" (click)="createOpen.set(true)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      <span class="btn-label">Create group</span>
+    </button>
   </div>
 
   @if (loading) {
-    <div class="empty">Loading groups...</div>
+    <app-shimmer type="list" [n]="5" />
   } @else if (groups.length === 0) {
     <div class="card empty">
       <h3>No groups yet</h3>
@@ -32,7 +38,18 @@
           }
           <button class="btn btn-sm" [class.btn-ghost]="g.is_member" [class.btn-primary]="!g.is_member"
                   (click)="toggleJoin(g)">
-            {{ g.is_member ? 'Leave' : 'Join' }}
+            @if (g.is_member) {
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            } @else {
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            }
+            <span class="btn-label">{{ g.is_member ? 'Leave' : 'Join' }}</span>
           </button>
         </div>
       </div>

@@ -168,3 +168,16 @@ input, textarea { font-family: inherit; }
   align-items: center;
   justify-content: center;
 }
+
+/* Mobile: collapse secondary button labels to icon-only */
+@media (max-width: 640px) {
+  .btn-label { display: none; }
+  .btn { padding: 10px 12px; }
+  .btn-sm { padding: 8px 10px; }
+  .mode-btn { padding: 7px 10px; }
+  .mode-btn .mb-icon { font-size: 16px; line-height: 1; }
+  .upload-btn { padding: 10px 12px; }
+  .post-actions { justify-content: space-between; }
+  .action { padding: 8px 10px; }
+  .action svg { width: 22px; height: 22px; }
+}

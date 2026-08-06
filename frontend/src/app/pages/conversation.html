@@ -26,7 +26,7 @@
     <div class="card thread-card">
       <div class="thread" #thread>
         @if (loading) {
-          <div class="empty">Loading messages...</div>
+          <app-shimmer type="bubbles" [n]="5" />
         } @else if (messages.length === 0) {
           <div class="empty">Say hi to @{{ username }}!</div>
         } @else {

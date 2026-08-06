@@ -9,7 +9,7 @@
   </div>
 
   @if (loading) {
-    <div class="empty">Loading...</div>
+    <app-shimmer type="feed" [n]="3" />
   } @else if (posts.length === 0) {
     <div class="card empty">
       <h3>Nothing saved yet</h3>

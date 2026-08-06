@@ -1,6 +1,6 @@
 <div class="search-results card">
   @if (loading) {
-    <div class="empty" style="padding:16px">Searching...</div>
+    <app-shimmer type="list" [n]="3" />
   } @else if (results.length === 0) {
     <div class="empty" style="padding:16px">No users found.</div>
   } @else {

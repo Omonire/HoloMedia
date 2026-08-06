@@ -7,10 +7,11 @@ import { AuthService } from '../services/auth.service';
 import { Post, SpotifyTrack } from '../models';
 import { PostCardComponent } from '../widgets/post-card.component';
 import { AvatarComponent } from '../shared/avatar.component';
+import { ShimmerComponent } from '../shared/shimmer.component';
 
 @Component({
   selector: 'app-feed',
-  imports: [FormsModule, PostCardComponent, AvatarComponent],
+  imports: [FormsModule, PostCardComponent, AvatarComponent, ShimmerComponent],
   templateUrl: './feed.html',
   styleUrl: './feed.css',
 })

@@ -22,6 +22,10 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },
   {
+    path: 'demo/ari',
+    loadComponent: () => import('./demo/ari/ari-demo.component').then((m) => m.AriDemoComponent),
+  },
+  {
     path: '',
     component: AppShellComponent,
     canActivate: [authGuard],

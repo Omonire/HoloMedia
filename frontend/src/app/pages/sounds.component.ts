@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Subject, Subscription, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs';
 import { ApiService } from '../services/api.service';
 import { Post, SpotifyTrack } from '../models';
+import { ShimmerComponent } from '../shared/shimmer.component';
 
 interface Sound {
   name: string;
@@ -21,7 +22,7 @@ interface Sound {
 
 @Component({
   selector: 'app-sounds',
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, ShimmerComponent],
   templateUrl: './sounds.html',
   styleUrl: './sounds.css',
 })

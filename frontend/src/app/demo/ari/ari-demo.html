@@ -1,0 +1,19 @@
+<div class="ari-page">
+  <header class="ari-topbar">
+    <div class="ari-brand">
+      <span class="ari-mark">ARI</span>
+      <span class="ari-sub">/ Flux Toast Stack</span>
+    </div>
+    <div class="ari-actions">
+      <button class="ari-btn" (click)="reset()">Reset stack</button>
+      <a class="ari-btn" routerLink="/">Back to HoloMedia</a>
+    </div>
+  </header>
+
+  <div class="ari-stage">
+    <div class="ari-hint">
+      Move your pointer across the stage to tilt and parallax the stack. Hover the stack to expand it.
+    </div>
+    <div #host class="ari-host"></div>
+  </div>
+</div>

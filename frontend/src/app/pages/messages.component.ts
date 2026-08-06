@@ -6,10 +6,11 @@ import { Conversation, User } from '../models';
 import { AvatarComponent } from '../shared/avatar.component';
 import { TimeAgoPipe } from '../shared/timeago.pipe';
 import { FormsModule } from '@angular/forms';
+import { ShimmerComponent } from '../shared/shimmer.component';
 
 @Component({
   selector: 'app-messages',
-  imports: [AvatarComponent, TimeAgoPipe, FormsModule],
+  imports: [AvatarComponent, TimeAgoPipe, FormsModule, ShimmerComponent],
   templateUrl: './messages.html',
   styleUrl: './messages.css',
 })

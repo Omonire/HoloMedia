@@ -3,10 +3,11 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ApiService } from '../services/api.service';
 import { Post } from '../models';
 import { PostCardComponent } from '../widgets/post-card.component';
+import { ShimmerComponent } from '../shared/shimmer.component';
 
 @Component({
   selector: 'app-hashtag',
-  imports: [RouterLink, PostCardComponent],
+  imports: [RouterLink, PostCardComponent, ShimmerComponent],
   templateUrl: './hashtag.html',
   styleUrl: './hashtag.css',
 })

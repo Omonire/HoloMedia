@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../services/api.service';
 import { AuthService } from '../services/auth.service';
 import { Group } from '../models';
+import { ShimmerComponent } from '../shared/shimmer.component';
 
 @Component({
   selector: 'app-groups',
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, ShimmerComponent],
   templateUrl: './groups.html',
   styleUrl: './groups.css',
 })

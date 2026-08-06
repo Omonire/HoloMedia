@@ -7,10 +7,11 @@ import { Post, User } from '../models';
 import { PostCardComponent } from '../widgets/post-card.component';
 import { AvatarComponent } from '../shared/avatar.component';
 import { TimeAgoPipe } from '../shared/timeago.pipe';
+import { ShimmerComponent } from '../shared/shimmer.component';
 
 @Component({
   selector: 'app-profile',
-  imports: [FormsModule, RouterLink, PostCardComponent, AvatarComponent, TimeAgoPipe],
+  imports: [FormsModule, RouterLink, PostCardComponent, AvatarComponent, TimeAgoPipe, ShimmerComponent],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })

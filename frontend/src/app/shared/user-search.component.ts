@@ -4,10 +4,11 @@ import { ApiService } from '../services/api.service';
 import { AuthService } from '../services/auth.service';
 import { User } from '../models';
 import { AvatarComponent } from './avatar.component';
+import { ShimmerComponent } from './shimmer.component';
 
 @Component({
   selector: 'app-user-search',
-  imports: [AvatarComponent],
+  imports: [AvatarComponent, ShimmerComponent],
   templateUrl: './user-search.html',
   styleUrl: './user-search.css',
 })

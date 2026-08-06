@@ -12,19 +12,38 @@
           <app-avatar [name]="u.full_name" [color]="u.avatar_color" [size]="84"/>
           <div class="profile-actions">
             @if (isSelf()) {
-              <button class="btn btn-ghost btn-sm" (click)="openEdit()">Edit profile</button>
+              <button class="btn btn-ghost btn-sm" (click)="openEdit()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                </svg>
+                <span class="btn-label">Edit profile</span>
+              </button>
             } @else {
               @if (u.is_following) {
-                <button class="btn btn-ghost btn-sm" (click)="toggleFollow()">Following</button>
+                <button class="btn btn-ghost btn-sm" (click)="toggleFollow()">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                       stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                  <span class="btn-label">Following</span>
+                </button>
               } @else {
-                <button class="btn btn-primary btn-sm" (click)="toggleFollow()">Follow</button>
+                <button class="btn btn-primary btn-sm" (click)="toggleFollow()">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                       stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/>
+                    <line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>
+                  </svg>
+                  <span class="btn-label">Follow</span>
+                </button>
               }
               <button class="btn btn-ghost btn-sm" (click)="message()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                      stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                 </svg>
-                Message
+                <span class="btn-label">Message</span>
               </button>
             }
           </div>
@@ -62,7 +81,7 @@
           }
         } @else {
           @if (followingLoading) {
-            <div class="empty">Loading...</div>
+            <app-shimmer type="list" [n]="4" />
           } @else {
             @for (f of (tab === 'followers' ? followers : following); track f.id) {
               <div class="card person">

@@ -8,6 +8,7 @@ import { SocketService } from '../services/socket.service';
 import { Message, User } from '../models';
 import { AvatarComponent } from '../shared/avatar.component';
 import { TimeAgoPipe } from '../shared/timeago.pipe';
+import { ShimmerComponent } from '../shared/shimmer.component';
 
 interface SocketMessage {
   id: number;
@@ -20,7 +21,7 @@ interface SocketMessage {
 
 @Component({
   selector: 'app-conversation',
-  imports: [RouterLink, FormsModule, AvatarComponent, TimeAgoPipe],
+  imports: [RouterLink, FormsModule, AvatarComponent, TimeAgoPipe, ShimmerComponent],
   templateUrl: './conversation.html',
   styleUrl: './conversation.css',
 })
