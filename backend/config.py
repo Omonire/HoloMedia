@@ -10,7 +10,13 @@ MAX_UPLOAD_MB = int(os.environ.get("MAX_UPLOAD_MB", "100"))
 
 
 def _database_uri():
-    url = (os.environ.get("DATABASE_URL") or "").strip()
+    raw = os.environ.get("DATABASE_URL") or ""
+    # Defensive: locate the connection URL wherever it appears in the value
+    # (Vercel's env-add can prepend prompt echoes/newlines to the value).
+    start = raw.find("postgresql://")
+    if start == -1:
+        start = raw.find("postgres://")
+    url = raw[start:].strip() if start != -1 else ""
     if url:
         if url.startswith("postgres://"):
             url = url.replace("postgres://", "postgresql+psycopg2://", 1)
