@@ -12,6 +12,11 @@
 npm-debug.log
 yarn-error.log
 
+# Android signing
+*.keystore
+*.jks
+android/app/*.keystore
+
 # IDEs and editors
 .idea/
 .project
