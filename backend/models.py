@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from extensions import db
@@ -214,6 +215,164 @@ class Post(db.Model):
             "repost_of": self.repost_of.to_dict(viewer=viewer) if self.repost_of_id else None,
         }
         return data
+
+
+def serialize_posts(posts, viewer=None):
+    """Serialize a list of posts with batched queries.
+
+    Post.to_dict() runs one query per like/comment/bookmark/repost stat, which
+    is an N+1 explosion on large feeds and blows past serverless timeouts
+    (e.g. Vercel) on remote Postgres. This helper resolves all counts and the
+    viewer's state for every post with a handful of grouped queries instead.
+    """
+    if not posts:
+        return []
+    ids = [p.id for p in posts]
+    author_ids = list({p.user_id for p in posts})
+    repost_ids = [p.repost_of_id for p in posts if p.repost_of_id]
+
+    like_rows = (
+        db.session.query(Like.post_id, Like.kind, func.count().label("n"))
+        .filter(Like.post_id.in_(ids))
+        .group_by(Like.post_id, Like.kind)
+        .all()
+    )
+    comment_counts = dict(
+        db.session.query(Comment.post_id, func.count())
+        .filter(Comment.post_id.in_(ids))
+        .group_by(Comment.post_id)
+        .all()
+    )
+    bookmark_counts = dict(
+        db.session.query(Bookmark.post_id, func.count())
+        .filter(Bookmark.post_id.in_(ids))
+        .group_by(Bookmark.post_id)
+        .all()
+    )
+    repost_counts = dict(
+        db.session.query(Post.repost_of_id, func.count())
+        .filter(Post.repost_of_id.in_(ids))
+        .group_by(Post.repost_of_id)
+        .all()
+    )
+
+    like_counts = {}
+    reactions = {}
+    for pid, kind, n in like_rows:
+        like_counts[pid] = like_counts.get(pid, 0) + n
+        reactions.setdefault(pid, {})[kind] = n
+
+    my_reaction = {}
+    my_reposts = set()
+    my_bookmarks = set()
+    if viewer is not None:
+        my_reaction = dict(
+            db.session.query(Like.post_id, Like.kind)
+            .filter(Like.post_id.in_(ids), Like.user_id == viewer.id)
+            .all()
+        )
+        my_reposts = {
+            pid
+            for (pid,) in db.session.query(Post.repost_of_id)
+            .filter(Post.repost_of_id.in_(ids), Post.user_id == viewer.id)
+            .all()
+        }
+        my_bookmarks = {
+            pid
+            for (pid,) in db.session.query(Bookmark.post_id)
+            .filter(Bookmark.post_id.in_(ids), Bookmark.user_id == viewer.id)
+            .all()
+        }
+
+    users = {u.id: u for u in User.query.filter(User.id.in_(author_ids)).all()}
+    user_posts = dict(
+        db.session.query(Post.user_id, func.count())
+        .filter(Post.user_id.in_(author_ids))
+        .group_by(Post.user_id)
+        .all()
+    )
+    user_followers = dict(
+        db.session.query(follows.c.followed_id, func.count())
+        .filter(follows.c.followed_id.in_(author_ids))
+        .group_by(follows.c.followed_id)
+        .all()
+    )
+    user_following = dict(
+        db.session.query(follows.c.follower_id, func.count())
+        .filter(follows.c.follower_id.in_(author_ids))
+        .group_by(follows.c.follower_id)
+        .all()
+    )
+    viewer_follows = set()
+    if viewer is not None:
+        viewer_follows = {
+            uid
+            for (uid,) in db.session.query(follows.c.followed_id)
+            .filter(follows.c.follower_id == viewer.id)
+            .all()
+        }
+
+    repost_map = {}
+    if repost_ids:
+        repost_map = {
+            rp.id: rp for rp in Post.query.filter(Post.id.in_(repost_ids)).all()
+        }
+
+    def author_dict(u):
+        data = {
+            "id": u.id,
+            "username": u.username,
+            "full_name": u.full_name,
+            "bio": u.bio or "",
+            "avatar_color": u.avatar_color,
+            "is_admin": u.is_admin,
+            "is_suspended": u.is_suspended,
+            "created_at": u.created_at.isoformat(),
+            "post_count": user_posts.get(u.id, 0),
+            "followers_count": user_followers.get(u.id, 0),
+            "following_count": user_following.get(u.id, 0),
+        }
+        if viewer is not None:
+            data["is_following"] = u.id in viewer_follows
+            data["is_self"] = viewer.id == u.id
+        return data
+
+    def one(p):
+        pid = p.id
+        rev = reactions.get(pid) or {}
+        data = {
+            "id": pid,
+            "content": p.content,
+            "image_url": p.image_url,
+            "video_url": p.video_url,
+            "sound": p.sound,
+            "sound_track_id": p.sound_track_id,
+            "sound_artist": p.sound_artist,
+            "sound_artwork": p.sound_artwork,
+            "sound_preview": p.sound_preview,
+            "sound_url": p.sound_url,
+            "group_id": p.group_id,
+            "created_at": p.created_at.isoformat(),
+            "author": author_dict(users[p.user_id]),
+            "likes_count": like_counts.get(pid, 0),
+            "comments_count": comment_counts.get(pid, 0),
+            "liked": my_reaction.get(pid) is not None,
+            "my_reaction": my_reaction.get(pid),
+            "reactions": {k: rev.get(k, 0) for k in Post.REACTIONS},
+            "reposts_count": repost_counts.get(pid, 0),
+            "reposted": pid in my_reposts,
+            "bookmarks_count": bookmark_counts.get(pid, 0),
+            "bookmarked": pid in my_bookmarks,
+            "is_repost": p.repost_of_id is not None,
+            "repost_of": (
+                one(repost_map[p.repost_of_id])
+                if p.repost_of_id and p.repost_of_id in repost_map
+                else None
+            ),
+        }
+        return data
+
+    return [one(p) for p in posts]
 
 
 class Like(db.Model):

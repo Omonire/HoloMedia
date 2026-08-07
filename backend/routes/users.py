@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 
 from extensions import db
-from models import User, Post, Notification, follows
+from models import User, Post, Notification, follows, serialize_posts
 
 users_bp = Blueprint("users", __name__, url_prefix="/api/users")
 
@@ -47,7 +47,7 @@ def user_posts(username):
         return jsonify(error="User not found."), 404
     viewer = _get_viewer()
     posts = user.posts.order_by(Post.created_at.desc()).all()
-    return jsonify(posts=[p.to_dict(viewer=viewer) for p in posts])
+    return jsonify(posts=serialize_posts(posts, viewer=viewer))
 
 
 @users_bp.get("/<username>/followers")

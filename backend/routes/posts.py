@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 
 from extensions import db
-from models import User, Post, Like, Comment, Bookmark, Notification
+from models import User, Post, Like, Comment, Bookmark, Notification, serialize_posts
 from spotify import (
     SpotifyPremiumRequired,
     available,
@@ -72,7 +72,7 @@ def sounds():
             "creator": latest.author.full_name,
             "creator_username": latest.author.username,
             "avatar_color": latest.author.avatar_color,
-            "posts": [p.to_dict(viewer=viewer) for p in sound_posts],
+            "posts": serialize_posts(sound_posts, viewer=viewer),
         })
     return jsonify(sounds=result)
 
@@ -100,7 +100,7 @@ def reels():
     if sound:
         query = query.filter(Post.sound == sound)
     posts = query.order_by(Post.created_at.desc()).all()
-    return jsonify(posts=[p.to_dict(viewer=viewer) for p in posts])
+    return jsonify(posts=serialize_posts(posts, viewer=viewer))
 
 
 @posts_bp.get("/feed")
@@ -114,7 +114,7 @@ def feed():
         .limit(60)
         .all()
     )
-    return jsonify(posts=[p.to_dict(viewer=user) for p in posts])
+    return jsonify(posts=serialize_posts(posts, viewer=user))
 
 
 @posts_bp.get("/bookmarks")
@@ -126,7 +126,7 @@ def my_bookmarks():
         .order_by(Bookmark.created_at.desc())
         .all()
     )
-    return jsonify(posts=[b.post.to_dict(viewer=user) for b in rows])
+    return jsonify(posts=serialize_posts([b.post for b in rows], viewer=user))
 
 
 @posts_bp.get("/")
@@ -137,7 +137,7 @@ def list_posts():
     if tag:
         query = query.filter(Post.content.ilike(f"%#{tag}%"))
     posts = query.order_by(Post.created_at.desc()).limit(60).all()
-    return jsonify(posts=[p.to_dict(viewer=viewer) for p in posts])
+    return jsonify(posts=serialize_posts(posts, viewer=viewer))
 
 
 @posts_bp.post("/")
