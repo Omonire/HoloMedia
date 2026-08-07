@@ -3,6 +3,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../services/api.service';
 import { AuthService } from '../services/auth.service';
+import { SeoService, SITE_URL } from '../services/seo.service';
 import { Group, Post, User } from '../models';
 import { PostCardComponent } from '../widgets/post-card.component';
 import { AvatarComponent } from '../shared/avatar.component';
@@ -19,6 +20,7 @@ export class GroupDetailComponent {
   private route = inject(ActivatedRoute);
   private api = inject(ApiService);
   auth = inject(AuthService);
+  private seo = inject(SeoService);
 
   group = signal<Group | null>(null);
   posts: Post[] = [];
@@ -44,6 +46,11 @@ export class GroupDetailComponent {
     this.api.get<{ group: Group }>(`/groups/${this.id}`).subscribe({
       next: (r) => {
         this.group.set(r.group);
+        this.seo.set({
+          title: r.group.name,
+          description: `${r.group.description || 'A community on HoloMedia.'} — ${r.group.members_count} members, ${r.group.posts_count} posts.`,
+          url: `${SITE_URL}/groups/${r.group.id}`,
+        });
         this.loadPosts();
         this.loadMembers();
       },

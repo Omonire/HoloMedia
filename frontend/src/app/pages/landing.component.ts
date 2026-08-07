@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SeoService, SITE_URL } from '../services/seo.service';
 
 interface LandingFeature {
   title: string;
@@ -14,6 +15,8 @@ interface LandingFeature {
   styleUrl: './landing.css',
 })
 export class LandingComponent {
+  private seo = inject(SeoService);
+
   features: LandingFeature[] = [
     {
       title: 'Timeline',
@@ -46,4 +49,12 @@ export class LandingComponent {
       icon: 'M12 3v3M18.4 5.6l-2.1 2.1M21 12h-3M5.6 18.4l2.1-2.1M3 12h3M18.4 18.4l-2.1-2.1M5.6 5.6l2.1 2.1M12 9a3 3 0 1 1-3 3 3 3 0 0 1 3-3z',
     },
   ];
+
+  ngOnInit(): void {
+    this.seo.set({
+      title: 'HoloMedia — Share posts, loop reels, drop sounds',
+      description: 'HoloMedia is a social media platform to share posts, loop short-form video reels, drop sounds, and connect in interest-based groups — free forever.',
+      url: SITE_URL,
+    });
+  }
 }

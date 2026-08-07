@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../services/api.service';
 import { AuthService } from '../services/auth.service';
+import { SeoService, SITE_URL } from '../services/seo.service';
 import { Post, User } from '../models';
 import { PostCardComponent } from '../widgets/post-card.component';
 import { AvatarComponent } from '../shared/avatar.component';
@@ -20,6 +21,7 @@ export class ProfileComponent {
   private router = inject(Router);
   private api = inject(ApiService);
   private auth = inject(AuthService);
+  private seo = inject(SeoService);
 
   user = signal<User | null>(null);
   posts: Post[] = [];
@@ -57,7 +59,14 @@ export class ProfileComponent {
     this.loading = true;
     this.error.set('');
     this.api.get<{ user: User }>(`/users/${this.username}`).subscribe({
-      next: (r) => this.user.set(r.user),
+      next: (r) => {
+        this.user.set(r.user);
+        this.seo.set({
+          title: r.user.full_name,
+          description: `${r.user.bio || `${r.user.full_name} is on HoloMedia.`} — ${r.user.followers_count} followers, ${r.user.post_count} posts.`,
+          url: `${SITE_URL}/${r.user.username}`,
+        });
+      },
       error: (e) => this.error.set(e.message),
     });
     this.api.get<{ posts: Post[] }>(`/users/${this.username}/posts`).subscribe({

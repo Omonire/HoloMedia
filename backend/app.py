@@ -1,5 +1,6 @@
 import os
 import re
+from datetime import datetime, timezone
 
 from flask import Flask, Response, jsonify, request, send_from_directory
 
@@ -71,17 +72,26 @@ def create_app():
 
     @app.get("/sitemap.xml")
     def sitemap():
-        today = "2026-08-07"
-        urls = ["/", "/welcome", "/login", "/register"]
-        entries = "".join(
-            f"  <url><loc>{SITE_URL}{path}</loc><changefreq>weekly</changefreq>"
-            f"<lastmod>{today}</lastmod><priority>{'1.0' if path == '/' else '0.6'}</priority></url>\n"
-            for path in urls
+        today = datetime.now(timezone.utc).date().isoformat()
+        entries = []
+        for path, priority in (("/", "1.0"), ("/welcome", "0.6"),
+                               ("/login", "0.6"), ("/register", "0.6")):
+            entries.append((path, today, priority))
+        for p in Post.query.all():
+            entries.append((f"/p/{p.id}", p.created_at.date().isoformat(), "0.5"))
+        for g in Group.query.all():
+            entries.append((f"/groups/{g.id}", g.created_at.date().isoformat(), "0.5"))
+        for u in User.query.all():
+            entries.append((f"/{u.username}", u.created_at.date().isoformat(), "0.4"))
+        urls = "".join(
+            f"  <url><loc>{SITE_URL}{path}</loc><lastmod>{lastmod}</lastmod>"
+            f"<changefreq>weekly</changefreq><priority>{priority}</priority></url>\n"
+            for path, lastmod, priority in entries
         )
         body = (
             '<?xml version="1.0" encoding="UTF-8"?>\n'
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-            f"{entries}</urlset>\n"
+            f"{urls}</urlset>\n"
         )
         return Response(body, mimetype="application/xml")
 

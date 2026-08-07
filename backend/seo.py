@@ -6,7 +6,11 @@ written, indexable HTML (meta tags, content, structured data) instead. Human
 visitors keep getting the normal Angular app.
 """
 
+import html
 import re
+
+from extensions import db
+from models import Group, Post, User
 
 SITE_URL = "https://holomedia.vercel.app"
 
@@ -22,7 +26,7 @@ def is_bot(user_agent):
     return bool(user_agent and _CRAWLER_RE.search(user_agent))
 
 
-def _head(title, description, canonical):
+def _head(title, description, canonical, extra_meta=""):
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -40,6 +44,7 @@ def _head(title, description, canonical):
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="{title}">
   <meta name="twitter:description" content="{description}">
+{extra_meta}
   <script type="application/ld+json">
   {{
     "@context": "https://schema.org",
@@ -123,6 +128,106 @@ def _simple(title, description, canonical, headline, body_html):
 """
 
 
+def _escape(text):
+    return html.escape(text or "", quote=True)
+
+
+def _excerpt(text, limit=140):
+    text = re.sub(r"\s+", " ", (text or "")).strip()
+    if len(text) > limit:
+        text = text[:limit].rstrip() + "…"
+    return _escape(text)
+
+
+def _parse_id(path):
+    try:
+        return int(path.rstrip("/").rsplit("/", 1)[-1])
+    except (TypeError, ValueError):
+        return None
+
+
+def _resource_page(head, inner):
+    return head + f"""<body>
+  <div class="wrap">
+    <nav class="nav">
+      <a class="logo" href="{SITE_URL}/">HoloMedia</a>
+      <div><a class="btn" href="{SITE_URL}/register">Get started</a></div>
+    </nav>
+    {inner}
+    <footer><p>HoloMedia — a fresh take on social. <a href="{SITE_URL}/">Home</a></p></footer>
+  </div>
+</body>
+</html>
+"""
+
+
+def _post_seo(post):
+    author = post.author
+    raw = re.sub(r"\s+", " ", post.content or "").strip() or "Shared a post"
+    title_text = raw[:64].rstrip() + ("…" if len(raw) > 64 else "")
+    title = f"{_escape(author.full_name)} — {_escape(title_text)} | HoloMedia"
+    canonical = f"{SITE_URL}/p/{post.id}"
+    description = (
+        f"{_escape(author.full_name)} posted on HoloMedia: "
+        f"{_excerpt(post.content, 160)} — {post.likes.count()} likes, "
+        f"{post.comments.count()} comments."
+    )
+
+    extra = ""
+    if post.image_url:
+        extra += f'  <meta property="og:image" content="{_escape(post.image_url)}">\n'
+        extra += f'  <meta name="twitter:image" content="{_escape(post.image_url)}">\n'
+    if post.video_url:
+        extra += (
+            f'  <meta property="og:type" content="video.other">\n'
+            f'  <meta property="og:video" content="{_escape(post.video_url)}">\n'
+        )
+
+    media = ""
+    if post.image_url:
+        media = f'  <p style="text-align:center;margin:24px 0;"><img src="{_escape(post.image_url)}" alt="{_escape(title_text)}" style="max-width:100%;border-radius:14px;"></p>\n'
+    elif post.video_url:
+        media = f'  <p style="text-align:center;margin:24px 0;"><video src="{_escape(post.video_url)}" controls style="max-width:100%;border-radius:14px;"></video></p>\n'
+
+    inner = f"""    <h1>{_escape(title_text)}</h1>
+    <p class="sub">by <a href="{SITE_URL}/{author.username}">@{_escape(author.username)}</a> · {post.likes.count()} likes · {post.comments.count()} comments</p>
+    <p style="font-size:18px;">{_excerpt(post.content, 1000)}</p>
+{media}    <p><a class="btn" href="{SITE_URL}/register">Join HoloMedia</a></p>
+"""
+    return _resource_page(_head(title, description, canonical, extra), inner)
+
+
+def _user_seo(user):
+    title = f"{_escape(user.full_name)} (@{_escape(user.username)}) on HoloMedia"
+    canonical = f"{SITE_URL}/{user.username}"
+    bio = user.bio or f"{user.full_name} is on HoloMedia."
+    description = (
+        f"{_excerpt(bio, 160)} — {user.followers.count()} followers, "
+        f"{user.following.count()} following, {user.posts.count()} posts."
+    )
+    inner = f"""    <h1>{_escape(user.full_name)}</h1>
+    <p class="sub">@{_escape(user.username)} · {user.followers.count()} followers · {user.posts.count()} posts</p>
+    <p style="font-size:18px;">{_excerpt(bio, 1000)}</p>
+    <p><a class="btn" href="{SITE_URL}/register">Follow @{_escape(user.username)} on HoloMedia</a></p>
+"""
+    return _resource_page(_head(title, description, canonical), inner)
+
+
+def _group_seo(group):
+    title = f"{_escape(group.name)} — Group on HoloMedia"
+    canonical = f"{SITE_URL}/groups/{group.id}"
+    description = (
+        f"{_excerpt(group.description, 160)} — {group.members.count()} members, "
+        f"{group.posts.count()} posts."
+    )
+    inner = f"""    <h1>{_escape(group.name)}</h1>
+    <p class="sub">{group.members.count()} members · {group.posts.count()} posts</p>
+    <p style="font-size:18px;">{_excerpt(group.description, 1000)}</p>
+    <p><a class="btn" href="{SITE_URL}/register">Join {_escape(group.name)} on HoloMedia</a></p>
+"""
+    return _resource_page(_head(title, description, canonical), inner)
+
+
 def seo_html(path):
     """Return static HTML for a given URL path, or None if not indexable."""
     if path in ("/", "/welcome"):
@@ -143,4 +248,23 @@ def seo_html(path):
             "Create your free account",
             "Join HoloMedia free forever. <a href=\"%s/login\">Already have an account? Log in</a>." % SITE_URL,
         )
+    if path.startswith("/p/"):
+        post_id = _parse_id(path)
+        if post_id:
+            post = db.session.get(Post, post_id)
+            if post:
+                return _post_seo(post)
+        return None
+    if path.startswith("/groups/"):
+        group_id = _parse_id(path)
+        if group_id:
+            group = db.session.get(Group, group_id)
+            if group:
+                return _group_seo(group)
+        return None
+    username = path.strip("/")
+    if username and "/" not in username and not _parse_id(username):
+        user = User.query.filter_by(username=username).first()
+        if user:
+            return _user_seo(user)
     return None
