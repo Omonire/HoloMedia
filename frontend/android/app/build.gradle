@@ -2,8 +2,8 @@ apply plugin: 'com.android.application'
 
 def keystorePath = System.getenv('ANDROID_KEYSTORE_PATH')
 def keystorePassword = System.getenv('ANDROID_KEYSTORE_PASSWORD')
-def keyAlias = System.getenv('ANDROID_KEY_ALIAS')
-def keyPassword = System.getenv('ANDROID_KEY_PASSWORD')
+def signingAlias = System.getenv('ANDROID_KEY_ALIAS')
+def signingPassword = System.getenv('ANDROID_KEY_PASSWORD')
 
 android {
     namespace = "com.holomedia.app"
@@ -26,8 +26,8 @@ android {
             if (keystorePath) {
                 storeFile file(keystorePath)
                 storePassword keystorePassword
-                keyAlias keyAlias
-                keyPassword keyPassword
+                keyAlias signingAlias
+                keyPassword signingPassword
             }
         }
     }
