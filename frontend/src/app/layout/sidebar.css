@@ -8,6 +8,16 @@
   gap: 6px;
 }
 
+.sidebar-nav-expanded {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.sidebar-nav-condensed {
+  display: none;
+}
+
 .logo {
   display: flex;
   align-items: center;
@@ -64,6 +74,8 @@
   .nav-item { justify-content: center; padding: 12px 0; }
   .sidebar-footer { justify-content: center; }
   .logo-mark { width: 36px; height: 36px; }
+  .sidebar-nav-expanded { display: none; }
+  .sidebar-nav-condensed { display: flex; flex-direction: column; }
 }
 
 @media (max-width: 640px) {
@@ -87,4 +99,11 @@
   .sidebar-footer { margin: 0; padding: 0; background: none; border: none; display: none; }
   .nav-item { flex: 1 0 auto; min-width: 44px; display: inline-flex; justify-content: center; padding: 8px 0; }
   .nav-item svg { width: 24px; height: 24px; }
+  .sidebar-nav-condensed {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    overflow-x: auto;
+    gap: 8px;
+  }
 }

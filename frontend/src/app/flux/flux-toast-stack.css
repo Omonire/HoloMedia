@@ -1,0 +1,37 @@
+flux-toast-stack {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1200;
+  width: min(380px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+flux-toast-stack .flux-toast-root {
+  pointer-events: auto;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  align-items: flex-end;
+  justify-content: center;
+  background: transparent;
+  background-image: none;
+  background-color: transparent;
+}
+
+flux-toast-stack .flux-toast-root .fts-stack {
+  width: 100%;
+}
+
+flux-toast-stack .flux-toast-root .fts-stackInner {
+  min-height: 0;
+}
+
+@media (max-width: 640px) {
+  flux-toast-stack {
+    left: 12px;
+    right: 12px;
+    bottom: calc(72px + env(safe-area-inset-bottom));
+    width: auto;
+  }
+}

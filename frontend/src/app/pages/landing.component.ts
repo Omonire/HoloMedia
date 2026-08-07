@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SeoService, SITE_URL } from '../services/seo.service';
+import { ScrollExpandComponent } from '../flux/scroll-expand.component';
 
 interface LandingFeature {
   title: string;
@@ -10,12 +11,14 @@ interface LandingFeature {
 
 @Component({
   selector: 'app-landing',
-  imports: [RouterLink],
+  imports: [RouterLink, ScrollExpandComponent],
   templateUrl: './landing.html',
   styleUrl: './landing.css',
 })
 export class LandingComponent {
   private seo = inject(SeoService);
+
+  heroSvg = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(this.buildHeroSvg());
 
   features: LandingFeature[] = [
     {
@@ -56,5 +59,23 @@ export class LandingComponent {
       description: 'HoloMedia is a social media platform to share posts, loop short-form video reels, drop sounds, and connect in interest-based groups — free forever.',
       url: SITE_URL,
     });
+  }
+
+  private buildHeroSvg(): string {
+    return (
+      '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">' +
+      '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+      '<stop offset="0" stop-color="#7c3aed"/><stop offset="1" stop-color="#ec4899"/>' +
+      '</linearGradient><radialGradient id="r" cx="0.82" cy="0.15" r="0.9">' +
+      '<stop offset="0" stop-color="#38bdf8" stop-opacity="0.5"/>' +
+      '<stop offset="1" stop-color="#38bdf8" stop-opacity="0"/>' +
+      '</radialGradient></defs>' +
+      '<rect width="1200" height="900" fill="#0a0a10"/>' +
+      '<rect width="1200" height="900" fill="url(#g)" opacity="0.9"/>' +
+      '<rect width="1200" height="900" fill="url(#r)"/>' +
+      '<circle cx="985" cy="175" r="150" fill="#7c3aed" opacity="0.55"/>' +
+      '<circle cx="155" cy="770" r="185" fill="#ec4899" opacity="0.35"/>' +
+      '</svg>'
+    );
   }
 }
