@@ -1,0 +1,12 @@
+scroll-expand {
+  display: block;
+  width: 100%;
+}
+
+scroll-expand .scroll-expand-host {
+  width: 100%;
+}
+
+scroll-expand .se-root {
+  height: auto;
+}

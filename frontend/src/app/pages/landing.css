@@ -87,6 +87,12 @@ main { flex: 1; }
   font-size: 13px;
 }
 
+.hero-showcase {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
 .features {
   max-width: 1000px;
   margin: 0 auto;
