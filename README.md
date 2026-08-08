@@ -34,6 +34,23 @@ The mission of HoloMedia is to bridge the gap between web and mobile user experi
 - **Bookmarking**: Save posts to a private bookmark list for future reference.
 - **Batch Query Serialization**: Feeds must leverage optimized batch database queries to prevent N+1 performance bottlenecks and API request timeouts on heavy traffic feeds.
 
+#### FR-8: Suggested Content Tags (Hashtags)
+The platform natively parses hashtags starting with `#` in any post content to promote high-quality discovery and interest-based categorization. Developers and users are officially suggested to use the following predefined tags:
+- **Core Platform & Interaction**:
+  - `#general` — Standard posts, general conversation, and overall platform updates.
+  - `#introduce` — Introduce yourself to the HoloMedia community when joining.
+  - `#help` — Ask questions or request assistance regarding features or usability.
+- **Interests & Professional Fields**:
+  - `#tech` — Discussion on software engineering, hardware, AI, and industry developments.
+  - `#design` — Creative assets, UI/UX designs, aesthetics, and artwork.
+  - `#music` — Spotify soundtracks, album reviews, artist recommendations, and track previews.
+  - `#photography` — Highlighting high-quality image uploads and visual stories.
+  - `#development` — Specific to development, coding, frameworks, and architecture.
+- **Community & Entertainment**:
+  - `#gaming` — Console or PC gaming discussions, video game achievements, and streams.
+  - `#art` — Illustration, drawing, painting, and digital art showcase.
+  - `#travel` — Scenic views, travel recommendations, culture, and photography from around the world.
+
 #### FR-3: The Engagement Engine
 - **Nuanced Reactions**: Move beyond the simple "like" button. Support for six distinct reactions: `like`, `love`, `haha`, `wow`, `sad`, and `angry`.
 - **Comment Threads**: Enable users to participate in conversational threads under posts.
