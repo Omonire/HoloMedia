@@ -14,13 +14,6 @@
     <span class="logo-text">Holo<span class="gradient-text">Media</span></span>
   </a>
 
-  <div class="sidebar-nav-expanded">
-    <line-sidebar [items]="navItems()" [defaultActive]="activeIndex()"
-                  (itemClick)="onItemClick($event)" />
-  </div>
-
-  <div class="sidebar-nav-condensed">
-
   <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-item">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
          stroke-linecap="round" stroke-linejoin="round">
@@ -107,10 +100,7 @@
       </svg>
       <span>Profile</span>
     </a>
-  }
-  </div>
 
-  @if (auth.user(); as me) {
     <div class="sidebar-footer">
       <a [routerLink]="['/', me.username]">
         <app-avatar [name]="me.full_name" [color]="me.avatar_color" [size]="38"/>
