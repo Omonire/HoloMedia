@@ -128,6 +128,29 @@ def create_app():
         resp.headers["Vary"] = (vary + ", Accept-Encoding") if vary else "Accept-Encoding"
         return resp
 
+    # Anonymous read endpoints are identical for everyone and change rarely --
+    # cache them at the CDN edge so repeat page loads never hit Python (which
+    # pays a ~1-5s cold start on serverless). Authenticated calls stay fresh.
+    EDGE_CACHE = {
+        "/api/suggestions": 60,
+        "/api/posts/trending": 120,
+    }
+
+    @app.after_request
+    def edge_cache(resp):
+        if request.method != "GET":
+            return resp
+        s_maxage = EDGE_CACHE.get(request.path)
+        if not s_maxage:
+            return resp
+        if request.headers.get("Authorization"):
+            resp.headers["Cache-Control"] = "private, no-store"
+            return resp
+        resp.headers["Cache-Control"] = (
+            f"public, max-age=30, s-maxage={s_maxage}, stale-while-revalidate=3600"
+        )
+        return resp
+
     @app.get("/api/health")
     def health():
         return jsonify(status="ok", service="HoloMedia API",
