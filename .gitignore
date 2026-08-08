@@ -26,6 +26,15 @@ frontend/dist/*
 .angular/
 npm-debug.log*
 
+# Web (React)
+web/dist/
+
+# Mobile (Expo)
+mobile/.expo/
+mobile/web-build/
+mobile/android/
+mobile/ios/
+
 # OS / editor
 .DS_Store
 Thumbs.db

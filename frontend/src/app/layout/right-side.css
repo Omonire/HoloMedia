@@ -2,11 +2,54 @@
   position: sticky;
   top: 0;
   height: 100vh;
+  z-index: 40;
+}
+
+.right-rail {
+  width: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 0;
+}
+.rail-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background .15s, color .15s, transform .12s;
+}
+.rail-btn:hover { background: var(--surface-2); color: var(--accent); transform: translateY(-1px); }
+
+.right-content {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 340px;
+  height: 100vh;
   overflow-y: auto;
   padding: 20px 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  background: var(--bg);
+  border-left: 1px solid var(--border);
+  box-shadow: -12px 0 40px rgba(0, 0, 0, .35);
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform .22s ease, visibility 0s linear .22s;
+}
+.right:hover .right-content {
+  transform: translateX(0);
+  visibility: visible;
+  transition: transform .22s ease;
 }
 
 .search-box {

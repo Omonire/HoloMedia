@@ -1,9 +1,7 @@
 .shell {
   display: grid;
-  grid-template-columns: 260px minmax(0, 640px) minmax(0, 340px);
-  justify-content: center;
+  grid-template-columns: 72px minmax(0, 1fr) 72px;
   gap: 0;
-  max-width: 1280px;
   margin: 0 auto;
 }
 
@@ -16,7 +14,6 @@
 
 @media (max-width: 1024px) {
   .shell { grid-template-columns: 72px minmax(0, 1fr); }
-  app-sidebar { /* handled in sidebar */ }
   app-right-side { display: none; }
 }
 

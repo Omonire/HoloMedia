@@ -1,0 +1,16 @@
+{
+  "name": "holomedia",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "packages/*",
+    "web",
+    "mobile"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w web",
+    "build": "npm run build -w web",
+    "typecheck": "tsc -p packages/shared --noEmit && tsc -p web --noEmit",
+    "mobile": "npm run start -w mobile"
+  }
+}
