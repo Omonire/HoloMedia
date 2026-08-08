@@ -228,8 +228,20 @@ def serialize_posts(posts, viewer=None):
     if not posts:
         return []
     ids = [p.id for p in posts]
-    author_ids = list({p.user_id for p in posts})
     repost_ids = [p.repost_of_id for p in posts if p.repost_of_id]
+
+    repost_map = {}
+    if repost_ids:
+        repost_map = {
+            rp.id: rp for rp in Post.query.filter(Post.id.in_(repost_ids)).all()
+        }
+
+    # Include reposted posts' authors so recursive serialization never misses
+    # a user in the batched map.
+    author_ids = list(
+        {p.user_id for p in posts}
+        | {rp.user_id for rp in repost_map.values()}
+    )
 
     like_rows = (
         db.session.query(Like.post_id, Like.kind, func.count().label("n"))
@@ -312,12 +324,6 @@ def serialize_posts(posts, viewer=None):
             .all()
         }
 
-    repost_map = {}
-    if repost_ids:
-        repost_map = {
-            rp.id: rp for rp in Post.query.filter(Post.id.in_(repost_ids)).all()
-        }
-
     def author_dict(u):
         data = {
             "id": u.id,
@@ -373,6 +379,141 @@ def serialize_posts(posts, viewer=None):
         return data
 
     return [one(p) for p in posts]
+
+
+def _user_stats(ids):
+    """Batched follower/following/post counts for a list of user ids."""
+    if not ids:
+        return {}, {}, {}, {}
+    users = {
+        u.id: u for u in User.query.filter(User.id.in_(ids)).all()
+    }
+    user_posts = dict(
+        db.session.query(Post.user_id, func.count())
+        .filter(Post.user_id.in_(ids))
+        .group_by(Post.user_id)
+        .all()
+    )
+    user_followers = dict(
+        db.session.query(follows.c.followed_id, func.count())
+        .filter(follows.c.followed_id.in_(ids))
+        .group_by(follows.c.followed_id)
+        .all()
+    )
+    user_following = dict(
+        db.session.query(follows.c.follower_id, func.count())
+        .filter(follows.c.follower_id.in_(ids))
+        .group_by(follows.c.follower_id)
+        .all()
+    )
+    return users, user_posts, user_followers, user_following
+
+
+def _user_dict(u, user_posts, user_followers, user_following,
+               viewer=None, viewer_follows=None):
+    data = {
+        "id": u.id,
+        "username": u.username,
+        "full_name": u.full_name,
+        "bio": u.bio or "",
+        "avatar_color": u.avatar_color,
+        "is_admin": u.is_admin,
+        "is_suspended": u.is_suspended,
+        "created_at": u.created_at.isoformat(),
+        "post_count": user_posts.get(u.id, 0),
+        "followers_count": user_followers.get(u.id, 0),
+        "following_count": user_following.get(u.id, 0),
+    }
+    if viewer is not None:
+        data["is_following"] = viewer_follows is not None and u.id in viewer_follows
+        data["is_self"] = viewer.id == u.id
+    return data
+
+
+def serialize_users(users, viewer=None):
+    """Serialize a list of users with batched count queries (no N+1)."""
+    if not users:
+        return []
+    ids = list({u.id for u in users})
+    users_map, user_posts, user_followers, user_following = _user_stats(ids)
+    viewer_follows = None
+    if viewer is not None:
+        viewer_follows = {
+            uid
+            for (uid,) in db.session.query(follows.c.followed_id)
+            .filter(follows.c.follower_id == viewer.id)
+            .all()
+        }
+    return [
+        _user_dict(users_map[u.id], user_posts, user_followers,
+                   user_following, viewer, viewer_follows)
+        for u in users if u.id in users_map
+    ]
+
+
+def serialize_notifications(notes):
+    """Serialize notifications with batched actor serialization."""
+    if not notes:
+        return []
+    actor_ids = list({n.actor_id for n in notes})
+    users_map, user_posts, user_followers, user_following = _user_stats(actor_ids)
+    return [{
+        "id": n.id,
+        "kind": n.kind,
+        "read": n.read,
+        "post_id": n.post_id,
+        "created_at": n.created_at.isoformat(),
+        "actor": _user_dict(users_map[n.actor_id], user_posts,
+                            user_followers, user_following),
+    } for n in notes if n.actor_id in users_map]
+
+
+def serialize_groups(groups, viewer=None):
+    """Serialize a list of groups with batched counts (no N+1)."""
+    if not groups:
+        return []
+    ids = list({g.id for g in groups})
+    creator_ids = list({g.created_by_id for g in groups})
+    users_map, user_posts, user_followers, user_following = _user_stats(creator_ids)
+    member_counts = dict(
+        db.session.query(group_members.c.group_id, func.count())
+        .filter(group_members.c.group_id.in_(ids))
+        .group_by(group_members.c.group_id)
+        .all()
+    )
+    post_counts = dict(
+        db.session.query(Post.group_id, func.count())
+        .filter(Post.group_id.in_(ids))
+        .group_by(Post.group_id)
+        .all()
+    )
+    viewer_memberships = set()
+    if viewer is not None:
+        viewer_memberships = {
+            gid
+            for (gid,) in db.session.query(group_members.c.group_id)
+            .filter(group_members.c.user_id == viewer.id)
+            .all()
+        }
+
+    def one(g):
+        data = {
+            "id": g.id,
+            "name": g.name,
+            "description": g.description or "",
+            "icon_color": g.icon_color,
+            "created_at": g.created_at.isoformat(),
+            "members_count": member_counts.get(g.id, 0),
+            "posts_count": post_counts.get(g.id, 0),
+            "created_by": _user_dict(users_map[g.created_by_id], user_posts,
+                                     user_followers, user_following),
+        }
+        if viewer is not None:
+            data["is_member"] = g.id in viewer_memberships
+            data["is_creator"] = g.created_by_id == viewer.id
+        return data
+
+    return [one(g) for g in groups if g.id in member_counts or True]
 
 
 class Like(db.Model):

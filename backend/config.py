@@ -26,10 +26,20 @@ def _database_uri():
     return "sqlite:///" + os.path.join(BASE_DIR, "holomedia.db")
 
 
+_DB_URI = _database_uri()
+
+_ENGINE_OPTIONS = {"pool_pre_ping": True, "pool_recycle": 280}
+if not _DB_URI.startswith("sqlite"):
+    # Postgres: keep a small pool per serverless instance and cap overflow so
+    # connection churn stays bounded under concurrent cold starts.
+    _ENGINE_OPTIONS.update({"pool_size": 4, "max_overflow": 8})
+
+
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "holomedia-dev-secret-change-me")
-    SQLALCHEMY_DATABASE_URI = _database_uri()
+    SQLALCHEMY_DATABASE_URI = _DB_URI
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = _ENGINE_OPTIONS
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "holomedia-jwt-secret")
     JWT_ACCESS_TOKEN_EXPIRES = os.environ.get("JWT_TOKEN_EXPIRES_MINUTES")
     if JWT_ACCESS_TOKEN_EXPIRES:

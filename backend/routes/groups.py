@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 
 from extensions import db
-from models import User, Group, Post, Notification, group_members, serialize_posts
+from models import User, Group, Post, Notification, group_members, serialize_posts, serialize_users, serialize_groups
 
 groups_bp = Blueprint("groups", __name__, url_prefix="/api/groups")
 
@@ -30,7 +30,7 @@ def list_groups():
             viewer = _viewer()
         except Exception:
             viewer = None
-    return jsonify(groups=[g.to_dict(viewer=viewer) for g in groups])
+    return jsonify(groups=serialize_groups(groups, viewer=viewer))
 
 
 @groups_bp.post("/")
@@ -158,4 +158,4 @@ def group_members_list(group_id):
         except Exception:
             viewer = None
     members = group.members.order_by(group_members.c.created_at.desc()).all()
-    return jsonify(members=[m.to_dict(viewer=viewer) for m in members])
+    return jsonify(members=serialize_users(members, viewer=viewer))

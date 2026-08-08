@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from extensions import db
-from models import User, Notification
+from models import User, Notification, serialize_notifications
 
 notifications_bp = Blueprint("notifications", __name__, url_prefix="/api/notifications")
 
@@ -19,7 +19,7 @@ def list_notifications():
     )
     unread = Notification.query.filter_by(user_id=user.id, read=False).count()
     return jsonify(
-        notifications=[n.to_dict() for n in notes],
+        notifications=serialize_notifications(notes),
         unread_count=unread,
     )
 

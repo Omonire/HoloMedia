@@ -2,6 +2,8 @@ import re
 
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
+from sqlalchemy import func
+from sqlalchemy.orm import joinedload
 
 from extensions import db
 from models import User, Post, Like, Comment, Bookmark, Notification, serialize_posts
@@ -11,6 +13,7 @@ from spotify import (
     is_configured,
     search_tracks,
 )
+from cache import ttl_cache
 
 posts_bp = Blueprint("posts", __name__, url_prefix="/api/posts")
 
@@ -48,18 +51,51 @@ def spotify_search():
         return jsonify(error="Spotify search failed. Please try again."), 502
 
 
+@ttl_cache(ttl=120)
+def _sounds_top(limit=20):
+    """Top sounds via a single SQL aggregation instead of a Python full scan."""
+    rows = (
+        db.session.query(Post.sound_track_id, Post.sound, func.count().label("n"))
+        .filter(Post.sound.isnot(None))
+        .group_by(Post.sound_track_id, Post.sound)
+        .order_by(func.count().desc())
+        .limit(limit)
+        .all()
+    )
+    return [(track_id, name, count) for track_id, name, count in rows]
+
+
 @posts_bp.get("/sounds")
 def sounds():
-    posts = Post.query.filter(Post.sound.isnot(None)).order_by(Post.created_at.desc()).all()
-    counts = {}
-    for p in posts:
-        key = p.sound_track_id or p.sound
-        counts[key] = counts.get(key, 0) + 1
-    top = sorted(counts.items(), key=lambda kv: kv[1], reverse=True)[:20]
+    top = _sounds_top()
+    if not top:
+        return jsonify(sounds=[])
     viewer = _viewer()
+    recent = (
+        Post.query.options(joinedload(Post.author))
+        .filter(Post.sound.isnot(None))
+        .order_by(Post.created_at.desc())
+        .limit(400)
+        .all()
+    )
+    by_key = {}
+    for p in recent:
+        by_key.setdefault(p.sound_track_id or p.sound, []).append(p)
+
+    selected_posts = []
+    for track_id, name, count in top:
+        for p in (by_key.get(track_id or name) or [])[:20]:
+            selected_posts.append(p)
+
+    serialized = serialize_posts(selected_posts, viewer=viewer)
+    ser_by_id = {p.id: s for p, s in zip(selected_posts, serialized)}
+
     result = []
-    for key, count in top:
-        sound_posts = [p for p in posts if (p.sound_track_id or p.sound) == key][:20]
+    for track_id, name, count in top:
+        key = track_id or name
+        sound_posts = (by_key.get(key) or [])[:20]
+        if not sound_posts:
+            continue
         latest = sound_posts[0]
         result.append({
             "name": latest.sound,
@@ -72,20 +108,32 @@ def sounds():
             "creator": latest.author.full_name,
             "creator_username": latest.author.username,
             "avatar_color": latest.author.avatar_color,
-            "posts": serialize_posts(sound_posts, viewer=viewer),
+            "posts": [ser_by_id[p.id] for p in sound_posts if p.id in ser_by_id],
         })
     return jsonify(sounds=result)
 
 
-@posts_bp.get("/trending")
-def trending():
-    posts = Post.query.filter(Post.content.isnot(None)).all()
+@ttl_cache(ttl=120)
+def _trending_tags():
+    from datetime import datetime, timedelta, timezone
+    since = datetime.now(timezone.utc) - timedelta(days=7)
+    posts = (
+        Post.query.filter(Post.created_at >= since, Post.content.isnot(None))
+        .order_by(Post.created_at.desc())
+        .limit(2000)
+        .all()
+    )
     counts = {}
     for p in posts:
         for tag in extract_hashtags(p.content):
             counts[tag] = counts.get(tag, 0) + 1
     top = sorted(counts.items(), key=lambda kv: kv[1], reverse=True)[:10]
-    return jsonify(trending=[{"tag": t, "count": c} for t, c in top])
+    return [{"tag": t, "count": c} for t, c in top]
+
+
+@posts_bp.get("/trending")
+def trending():
+    return jsonify(trending=_trending_tags())
 
 
 @posts_bp.get("/reels")
@@ -99,7 +147,7 @@ def reels():
     )
     if sound:
         query = query.filter(Post.sound == sound)
-    posts = query.order_by(Post.created_at.desc()).all()
+    posts = query.order_by(Post.created_at.desc()).limit(60).all()
     return jsonify(posts=serialize_posts(posts, viewer=viewer))
 
 

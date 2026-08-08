@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 
 from extensions import db
-from models import User, Post, Notification, follows, serialize_posts
+from models import User, Post, Notification, follows, serialize_posts, serialize_users
 
 users_bp = Blueprint("users", __name__, url_prefix="/api/users")
 
@@ -28,7 +28,7 @@ def search():
         .all()
     )
     viewer = _get_viewer()
-    return jsonify(users=[u.to_dict(viewer=viewer) for u in users])
+    return jsonify(users=serialize_users(users, viewer=viewer))
 
 
 @users_bp.get("/<username>")
@@ -56,7 +56,8 @@ def followers(username):
     if not user:
         return jsonify(error="User not found."), 404
     viewer = _get_viewer()
-    return jsonify(users=[u.to_dict(viewer=viewer) for u in user.followers.order_by(follows.c.created_at.desc())])
+    return jsonify(users=serialize_users(
+        user.followers.order_by(follows.c.created_at.desc()).all(), viewer=viewer))
 
 
 @users_bp.get("/<username>/following")
@@ -65,7 +66,8 @@ def following(username):
     if not user:
         return jsonify(error="User not found."), 404
     viewer = _get_viewer()
-    return jsonify(users=[u.to_dict(viewer=viewer) for u in user.following.order_by(follows.c.created_at.desc())])
+    return jsonify(users=serialize_users(
+        user.following.order_by(follows.c.created_at.desc()).all(), viewer=viewer))
 
 
 @users_bp.post("/<username>/follow")
