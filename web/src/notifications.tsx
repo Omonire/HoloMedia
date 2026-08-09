@@ -36,6 +36,7 @@ interface NotificationsContextValue {
   dismissToast: (id: string) => void;
   start: () => void;
   stop: () => void;
+  clearUnread: () => void;
 }
 
 const NotificationsContext = createContext<NotificationsContextValue>({
@@ -44,6 +45,7 @@ const NotificationsContext = createContext<NotificationsContextValue>({
   dismissToast: () => {},
   start: () => {},
   stop: () => {},
+  clearUnread: () => {},
 });
 
 export function useNotifications(): NotificationsContextValue {
@@ -103,10 +105,14 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
     setUnread(0);
   }, []);
 
+  const clearUnread = useCallback(() => {
+    setUnread(0);
+  }, []);
+
   useEffect(() => () => stop(), [stop]);
 
   return (
-    <NotificationsContext.Provider value={{ unread, toasts, dismissToast, start, stop }}>
+    <NotificationsContext.Provider value={{ unread, toasts, dismissToast, start, stop, clearUnread }}>
       {children}
     </NotificationsContext.Provider>
   );
