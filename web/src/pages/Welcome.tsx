@@ -4,40 +4,40 @@ import { useSeo } from '../hooks/useSeo';
 
 const FEATURES: { title: string; desc: string; icon: string; color: string }[] = [
   {
-    title: 'Timeline',
-    desc: 'A feed of the people and communities you care about, with rich embeds and reactions.',
+    title: 'Real-time Feed (X Style)',
+    desc: 'Instant updates, hot takes, reposts, and trending hashtags. Fuses the speed of X/Twitter with vibrant, interactive multimedia comments.',
     icon: 'M4 5h16M4 12h16M4 19h10',
-    color: '#7c3aed',
+    color: '#3b82f6',
   },
   {
-    title: 'Reels',
-    desc: 'Short, looping video stories with sound. Swipe, like, and share in a flash.',
+    title: 'Interactive Reels (TikTok Style)',
+    desc: 'Pure vertical immersive fullscreen looping video feed with custom right-hand sidebar buttons, scrolling sound marquees, and spinning vinyl discs.',
     icon: 'M4 5h10l6 6-6 6H4z',
     color: '#ec4899',
   },
   {
-    title: 'Sounds',
-    desc: 'Browse trending audio, preview tracks, and attach the perfect sound to any post.',
+    title: 'Aesthetic Visuals (Instagram Style)',
+    desc: 'High-fidelity glassmorphic cards, ambient shadow glows, physical micro-reactions particle bursts, and customizable profiles with custom colors.',
     icon: 'M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM21 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0z',
-    color: '#ef4444',
+    color: '#a855f7',
   },
   {
-    title: 'Groups',
-    desc: 'Private spaces to hang out with your people — post, chat, and plan together.',
+    title: 'Interest Groups (Facebook Style)',
+    desc: 'Build circles and dedicated channels to coordinate, discuss, and plan with like-minded friends in complete privacy.',
     icon: 'M12 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4zM4 20v-1a6 6 0 0 1 12 0v1M16 11a4 4 0 0 0 0-8M20 20v-1a6 6 0 0 0-4-5.6',
     color: '#10b981',
   },
   {
-    title: 'Direct messages',
-    desc: 'One-on-one conversations that stay fast, personal, and private.',
+    title: 'Direct Messages & Audio Chats',
+    desc: 'Ultra-fast fallback polling conversational threads. Keep your friends close with instant text messaging.',
     icon: 'M21 5H3v14h18zM3 7l9 6 9-6',
-    color: '#3b82f6',
+    color: '#06b6d4',
   },
   {
-    title: 'Live notifications',
-    desc: 'Realtime alerts for likes, follows, comments, and messages — right as they happen.',
+    title: 'Live Real-time Alerts',
+    desc: 'Instantly notify users upon likes, reposts, comments, or follow counts so you never miss a beat of your growing social graph.',
     icon: 'M12 3v3M18.4 5.6l-2.1 2.1M21 12h-3M5.6 18.4l2.1-2.1M3 12h3M18.4 18.4l-2.1-2.1M5.6 5.6l2.1 2.1M12 9a3 3 0 1 1-3 3 3 3 0 0 1 3-3z',
-    color: '#eab308',
+    color: '#f59e0b',
   },
 ];
 
@@ -55,9 +55,9 @@ const Logo = ({ size = 34 }: { size?: number }) => (
 
 export function Welcome() {
   useSeo({
-    title: 'HoloMedia — Share posts, loop reels, drop sounds',
+    title: 'HoloMedia — The Ultimate Merged Social Hub (X, TikTok, Instagram, Facebook)',
     description:
-      'HoloMedia is a social media platform to share posts, loop short-form video reels, drop sounds, and connect in interest-based groups — free forever.',
+      'HoloMedia fuses the rapid conversation of X, visual fidelity of Instagram, community circle building of Facebook, and addictive viral loop of TikTok into a single premium social super-app.',
   });
 
   return (
@@ -89,18 +89,17 @@ export function Welcome() {
 
       <section className="hero" style={{ position: 'relative', zIndex: 10, padding: '100px 24px 80px' }}>
         <div className="hero-badge" style={badgeStyle}>
-          ✨ A brand new social dimension
+          🌌 The Ultimate Merged Social Universe
         </div>
         <h1 style={heroTitleStyle}>
-          Where your moments
+          Where X, TikTok, IG &
           <br />
           <span className="gradient-text" style={{ fontSize: '1.15em', fontWeight: 900, filter: 'drop-shadow(0 0 20px rgba(236,72,153,0.35))' }}>
-            go live
+            Facebook Merge
           </span>
         </h1>
         <p className="hero-sub" style={heroSubStyle}>
-          Share posts, loop reels, drop sounds, and hang out in groups — all in one place built for
-          creative minds who move fast.
+          Why limit yourself? HoloMedia integrates real-time X-style microblogging, visual aesthetics from Instagram, community groups from Facebook, and addictive TikTok vertical reels into a single ultimate feed.
         </p>
         <div className="hero-cta" style={{ gap: 16 }}>
           <Link to="/register" className="btn btn-primary btn-lg" style={ctaMainStyle}>
@@ -111,16 +110,16 @@ export function Welcome() {
           </Link>
         </div>
         <p className="hero-note" style={{ fontSize: '13px', color: 'var(--text-dim)', marginTop: '20px' }}>
-          Free forever. No email verification required.
+          Free forever. Fusing 4 massive social hubs into a single unified social layer.
         </p>
       </section>
 
       <section className="features" style={{ position: 'relative', zIndex: 10, padding: '40px 24px 100px' }}>
         <h2 style={{ fontSize: '32px', fontWeight: 800, letterSpacing: '-0.8px', margin: '0 0 10px' }}>
-          Everything you love, in one feed
+          Unifying the Social Giants
         </h2>
         <p className="features-sub" style={{ color: 'var(--text-dim)', fontSize: '16px', margin: '0 0 50px' }}>
-          Six ways to connect — designed to feel effortless.
+          Experience the specific features that make each network legendary, working in total harmony.
         </p>
         <div className="features-grid" style={{ gap: 20 }}>
           {FEATURES.map((f) => (
@@ -141,9 +140,9 @@ export function Welcome() {
       <footer className="landing-footer" style={{ position: 'relative', zIndex: 10 }}>
         <div className="landing-logo">
           <Logo size={22} />
-          <span style={{ fontWeight: 700, fontSize: '16px' }}>HoloMedia</span>
+          <span style={{ fontWeight: 700, fontSize: '16px' }}>HoloMedia SuperApp</span>
         </div>
-        <p>© 2026 HoloMedia. Made with care.</p>
+        <p>© 2026 HoloMedia. Fusing social networks together.</p>
       </footer>
 
       <style>{`
@@ -225,7 +224,7 @@ const heroSubStyle: React.CSSProperties = {
   color: 'var(--text-dim)',
   fontSize: '18px',
   lineHeight: '1.6',
-  maxWidth: '540px',
+  maxWidth: '640px',
   margin: '0 auto 36px',
 };
 
