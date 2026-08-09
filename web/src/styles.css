@@ -708,3 +708,93 @@ input, textarea { font-family: inherit; }
   .landing-footer { justify-content: center; text-align: center; }
   .landing-nav { padding: 16px 20px; }
 }
+
+/* --- Premium UI Polishing & Micro-interactions --- */
+
+/* Smooth fade-in and slide-up transition for all page views */
+.page {
+  animation: view-slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes view-slide-up {
+  from { opacity: 0; transform: translateY(16px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* Glassmorphic card premium hover */
+.card {
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.card:hover {
+  border-color: rgba(124, 58, 237, 0.4);
+  box-shadow: 0 12px 36px rgba(124, 58, 237, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Heart-pop physical micro-vibration */
+@keyframes heart-pop {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.4) rotate(-8deg); }
+  50% { transform: scale(0.9) rotate(5deg); }
+  70% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.action.liked svg {
+  animation: heart-pop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+/* Bookmark bounce micro-vibration */
+@keyframes bookmark-pop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.3) translateY(-4px); }
+  70% { transform: scale(0.9) translateY(1px); }
+  100% { transform: scale(1) translateY(0); }
+}
+
+.action.active[title="Save"] svg {
+  animation: bookmark-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+/* Interactive Floating Particle and Wave for Landing / Splash */
+@keyframes float-particle {
+  0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.3; }
+  50% { transform: translateY(-30px) translateX(15px) scale(1.15); opacity: 0.6; }
+  100% { transform: translateY(-60px) translateX(-5px) scale(1); opacity: 0; }
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--gradient);
+  pointer-events: none;
+  animation: float-particle 4s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+}
+
+/* Mobile Quick-Action Floating Action Button (FAB) */
+.mobile-fab {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .mobile-fab {
+    display: flex;
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 28px;
+    background: var(--gradient);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.4);
+    align-items: center;
+    justify-content: center;
+    z-index: 60;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+  }
+  .mobile-fab:active {
+    transform: scale(0.9);
+  }
+}
