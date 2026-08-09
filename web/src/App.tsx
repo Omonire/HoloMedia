@@ -21,7 +21,7 @@ function GuestOnly({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
-function RequireAdmin({ children }: { children: ReactNode }) {
+export function RequireAdmin({ children }: { children: ReactNode }) {
   const { user, ready } = useAuth();
   if (!ready) return null;
   if (!user) return <Navigate to="/welcome" replace />;
