@@ -19,9 +19,13 @@ from cache import ttl_cache
 from indexes import ensure_indexes
 import realtime  # noqa: F401  (registers socket.io handlers)
 
-FRONTEND_DIR = os.path.normpath(
-    os.path.join(os.path.dirname(__file__), "..", "web", "dist")
-)
+_react_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "web", "dist"))
+_angular_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "frontend", "dist", "social-app", "browser"))
+
+if os.path.exists(os.path.join(_react_dir, "index.html")):
+    FRONTEND_DIR = _react_dir
+else:
+    FRONTEND_DIR = _angular_dir
 
 HASHED_ASSET_RE = re.compile(r"-(?:[A-Za-z0-9_]){8,}\.(?:js|css)$")
 
