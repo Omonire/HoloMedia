@@ -12,5 +12,11 @@
     "build": "npm run build -w web",
     "typecheck": "tsc -p packages/shared --noEmit && tsc -p web --noEmit",
     "mobile": "npm run start -w mobile"
+  },
+  "dependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.62.4"
+  },
+  "devDependencies": {
+    "vite": "^7.3.6"
   }
 }
