@@ -27,7 +27,7 @@ frontend/dist/*
 npm-debug.log*
 
 # Web (React)
-web/dist/
+!web/dist/
 
 # Mobile (Expo)
 mobile/.expo/
