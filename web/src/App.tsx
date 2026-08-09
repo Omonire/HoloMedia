@@ -6,24 +6,25 @@ import { Welcome } from './pages/Welcome';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Feed } from './pages/Feed';
+import { Loader } from './components/Loader';
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { user, ready } = useAuth();
-  if (!ready) return null;
+  if (!ready) return <Loader />;
   if (!user) return <Navigate to="/welcome" replace />;
   return <>{children}</>;
 }
 
 function GuestOnly({ children }: { children: ReactNode }) {
   const { user, ready } = useAuth();
-  if (!ready) return null;
+  if (!ready) return <Loader />;
   if (user) return <Navigate to="/" replace />;
   return <>{children}</>;
 }
 
 export function RequireAdmin({ children }: { children: ReactNode }) {
   const { user, ready } = useAuth();
-  if (!ready) return null;
+  if (!ready) return <Loader />;
   if (!user) return <Navigate to="/welcome" replace />;
   if (!user.is_admin) return <Navigate to="/" replace />;
   return <>{children}</>;
